@@ -3,16 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AN Psixoloji Dəstək və Reabilitasiya Mərkəzi — Test Platforması</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>AN Psixoloji Dəstək Mərkəzi</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<!-- Firebase compat (CDN, module deyil - daha etibarlı) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
 <script>
 firebase.initializeApp({
   apiKey:"AIzaSyCBhyGNzZRGgQShP_C9kwAzTm_g_0zJlzg",
@@ -23,102 +19,248 @@ firebase.initializeApp({
   messagingSenderId:"528809299356",
   appId:"1:528809299356:web:59cae89a64e446dc520c59"
 });
-
 const auth = firebase.auth();
 const db   = firebase.database();
-const gProvider = new firebase.auth.GoogleAuthProvider();
+const ADMIN_EMAIL = "samir.akhundoff@gmail.com";
 
-// AUTH STATE
+// ── AUTH STATE ──────────────────────────────────────────────
 auth.onAuthStateChanged(function(user) {
   if (user) {
-    document.getElementById('authWall').style.display = 'none';
-    document.getElementById('appShell').style.display = 'block';
+    show('appShell'); hide('authWall');
     document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
     var av = document.getElementById('userAvatar');
-    if (user.photoURL) { av.src = user.photoURL; av.style.display = 'block'; }
+    if (user.photoURL) { av.src = user.photoURL; av.style.display='block'; }
+    // Admin yoxlama
+    if (user.email === ADMIN_EMAIL) {
+      document.getElementById('adminBtn').style.display = 'flex';
+    }
+    // İstifadəçini DB-yə yaz
+    db.ref('melumat/users/'+user.uid).once('value', function(snap) {
+      if (!snap.exists()) {
+        db.ref('melumat/users/'+user.uid).set({
+          ad: user.displayName || user.email.split('@')[0],
+          email: user.email,
+          foto: user.photoURL || '',
+          qeydiyyat: new Date().toLocaleDateString('az-AZ'),
+          createdAt: Date.now()
+        });
+      }
+    });
   } else {
-    document.getElementById('authWall').style.display = 'flex';
-    document.getElementById('appShell').style.display = 'none';
+    show('authWall'); hide('appShell'); hide('adminPanel');
   }
 });
 
-// YALNIZ GOOGLE LOGIN
+// ── GOOGLE LOGIN ────────────────────────────────────────────
 function loginGoogle() {
-  auth.signInWithPopup(gProvider)
-    .then(function(result) {
-      // uğurlu giriş - onAuthStateChanged işləyir
-    })
-    .catch(function(error) {
-      showErr(error.code);
-    });
-}
-
-function doLogout() {
-  auth.signOut();
-}
-
-// NƏTİCƏ SAXLA - database rules-a uyğun path istifadə et
-// "melumat" path-ı açıqdır (read:true, write:true)
-function saveResult(testName, data) {
-  var user = auth.currentUser;
-  if (!user) { showToast('Əvvəlcə daxil olun!'); return; }
-
-  var timestamp = Date.now();
-  var key = 'test_' + user.uid + '_' + timestamp;
-
-  // melumat path-ına yazırıq (bu path rules-da açıqdır)
-  db.ref('testResults/' + user.uid).push({
-    test: testName,
-    data: data,
-    istifadeci: user.displayName || user.email,
-    tarix: new Date().toLocaleDateString('az-AZ'),
-    createdAt: timestamp
-  }, function(error) {
-    if (error) {
-      // Əgər testResults bloklanırsa, melumat path-ına yaz
-      db.ref('melumat/testResults/' + user.uid).push({
-        test: testName,
-        data: data,
-        istifadeci: user.displayName || user.email,
-        tarix: new Date().toLocaleDateString('az-AZ'),
-        createdAt: timestamp
-      }, function(err2) {
-        if (err2) {
-          // Lokal saxla
-          var existing = JSON.parse(localStorage.getItem('anTestResults') || '[]');
-          existing.push({ test: testName, data: data, tarix: new Date().toLocaleDateString('az-AZ') });
-          localStorage.setItem('anTestResults', JSON.stringify(existing));
-          showToast('✓ Nəticə lokal yadda saxlandı');
-        } else {
-          showToast('✓ Nəticə yadda saxlandı!');
-        }
-      });
+  var provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(function(e) {
+    // Popup bloklanırsa redirect istifadə et
+    if (e.code === 'auth/popup-blocked' || e.code === 'auth/popup-closed-by-user') {
+      auth.signInWithRedirect(provider);
     } else {
-      showToast('✓ Nəticə uğurla yadda saxlandı!');
+      showErr(e.code);
     }
   });
 }
+// Redirect nəticəsini al
+auth.getRedirectResult().then(function(result) {
+  if (result && result.user) { /* OK */ }
+}).catch(function(e) { if(e.code) showErr(e.code); });
 
-var ERRS = {
-  'auth/popup-closed-by-user': 'Pəncərə bağlandı, yenidən cəhd edin',
-  'auth/popup-blocked': 'Brauzer pəncərəni blokladı — popup-a icazə verin',
-  'auth/network-request-failed': 'İnternet bağlantısı yoxdur',
-  'auth/too-many-requests': 'Çox cəhd — bir az gözləyin',
-  'auth/cancelled-popup-request': 'Əməliyyat ləğv edildi'
-};
-
-function showErr(code) {
-  var el = document.getElementById('authError');
-  el.textContent = ERRS[code] || 'Xəta: ' + code;
-  el.style.display = 'block';
-  setTimeout(function(){ el.style.display='none'; }, 5000);
+// ── EMAIL QEYDİYYAT ─────────────────────────────────────────
+function registerEmail() {
+  clearErr();
+  var name  = val('regName');
+  var email = val('regEmail');
+  var pass  = val('regPass');
+  var pass2 = val('regPass2');
+  if (!name||!email||!pass) { showErr('Bütün xanaları doldurun'); return; }
+  if (pass!==pass2)         { showErr('Şifrələr uyğun deyil'); return; }
+  if (pass.length<6)        { showErr('Şifrə min 6 simvol olmalıdır'); return; }
+  setBtnLoad('regBtn', true);
+  auth.createUserWithEmailAndPassword(email, pass)
+    .then(function(c) {
+      return c.user.updateProfile({ displayName: name });
+    })
+    .then(function() {
+      setBtnLoad('regBtn', false);
+    })
+    .catch(function(e) {
+      setBtnLoad('regBtn', false);
+      showErr(e.code);
+    });
 }
 
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  setTimeout(function(){ t.style.display='none'; }, 3500);
+// ── EMAIL GİRİŞ ─────────────────────────────────────────────
+function loginEmail() {
+  clearErr();
+  var email = val('loginEmail');
+  var pass  = val('loginPass');
+  if (!email||!pass) { showErr('Xana boş ola bilməz'); return; }
+  setBtnLoad('loginBtn', true);
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(function() { setBtnLoad('loginBtn', false); })
+    .catch(function(e) {
+      setBtnLoad('loginBtn', false);
+      showErr(e.code);
+    });
+}
+
+function doLogout() { auth.signOut(); }
+
+// ── NƏTİCƏ SAXLA ────────────────────────────────────────────
+function saveResult(testName, data) {
+  var user = auth.currentUser;
+  if (!user) { showToast('❌ Əvvəlcə daxil olun!'); return; }
+  var entry = {
+    test: testName,
+    data: data,
+    istifadeci: user.displayName || user.email,
+    email: user.email,
+    tarix: new Date().toLocaleDateString('az-AZ'),
+    saat: new Date().toLocaleTimeString('az-AZ'),
+    createdAt: Date.now()
+  };
+  db.ref('melumat/testResults').push(entry, function(err) {
+    if (err) {
+      // Fallback: birbaşa öz uid-i altına yaz
+      db.ref('melumat/results/'+user.uid).push(entry, function(err2) {
+        if (err2) {
+          var loc = JSON.parse(localStorage.getItem('anTests')||'[]');
+          loc.push(entry);
+          localStorage.setItem('anTests', JSON.stringify(loc));
+          showToast('✓ Lokal yadda saxlandı (internet problemi)');
+        } else showToast('✓ Nəticə yadda saxlandı!');
+      });
+    } else showToast('✓ Nəticə uğurla yadda saxlandı!');
+  });
+}
+
+// ── ADMİN PANELİ ────────────────────────────────────────────
+function openAdmin() {
+  var user = auth.currentUser;
+  if (!user || user.email !== ADMIN_EMAIL) {
+    showToast('❌ Əlçatan deyil');
+    return;
+  }
+  show('adminPanel');
+  hide('appShell');
+  loadAdminData();
+}
+
+function closeAdmin() {
+  hide('adminPanel');
+  show('appShell');
+}
+
+function loadAdminData() {
+  document.getElementById('adminContent').innerHTML = '<div class="admin-loading"><i class="fas fa-spinner fa-spin"></i> Yüklənir...</div>';
+  
+  // İstifadəçilər
+  db.ref('melumat/users').once('value', function(snap) {
+    var users = snap.val() || {};
+    var uCount = Object.keys(users).length;
+    document.getElementById('statUsers').textContent = uCount;
+  });
+
+  // Nəticələr
+  db.ref('melumat/testResults').once('value', function(snap) {
+    var results = snap.val() || {};
+    var arr = Object.entries(results).map(function(e){ return e[1]; });
+    arr.sort(function(a,b){ return b.createdAt - a.createdAt; });
+    document.getElementById('statResults').textContent = arr.length;
+
+    var html = '';
+    if (arr.length === 0) {
+      html = '<div class="admin-empty"><i class="fas fa-inbox"></i><p>Hələ heç bir nəticə yoxdur</p></div>';
+    } else {
+      arr.forEach(function(r) {
+        html += '<div class="result-card">';
+        html += '<div class="rc-header">';
+        html += '<div class="rc-info"><span class="rc-name">'+(r.istifadeci||'—')+'</span>';
+        html += '<span class="rc-email">'+(r.email||'')+'</span></div>';
+        html += '<div class="rc-meta"><span class="rc-test">'+r.test+'</span>';
+        html += '<span class="rc-date">'+(r.tarix||'')+'</span></div></div>';
+        html += '<div class="rc-body">';
+        if (r.data && Array.isArray(r.data)) {
+          r.data.forEach(function(d) {
+            html += '<div class="rc-row">';
+            html += '<span class="rc-label">'+d.label+'</span>';
+            html += '<span class="rc-check '+(d.tanindi?'yes':'no')+'">'+(d.tanindi?'✓':'✗')+'</span>';
+            if (d.qeyd && d.qeyd !== '—') html += '<span class="rc-note">'+d.qeyd+'</span>';
+            html += '</div>';
+          });
+        }
+        html += '</div></div>';
+      });
+    }
+    document.getElementById('adminContent').innerHTML = html;
+  });
+
+  // İstifadəçi siyahısı
+  db.ref('melumat/users').once('value', function(snap) {
+    var users = snap.val() || {};
+    var html = '';
+    Object.entries(users).forEach(function(e) {
+      var u = e[1];
+      html += '<div class="user-row">';
+      html += '<span class="ur-name">'+(u.ad||'—')+'</span>';
+      html += '<span class="ur-email">'+(u.email||'')+'</span>';
+      html += '<span class="ur-date">'+(u.qeydiyyat||'')+'</span>';
+      html += '</div>';
+    });
+    document.getElementById('usersList').innerHTML = html || '<p style="color:var(--muted);font-size:.8rem">İstifadəçi yoxdur</p>';
+  });
+}
+
+function filterResults() {
+  var q = document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.result-card').forEach(function(card) {
+    var txt = card.textContent.toLowerCase();
+    card.style.display = txt.includes(q) ? 'block' : 'none';
+  });
+}
+
+// ── HELPERS ─────────────────────────────────────────────────
+var ERRS = {
+  'auth/email-already-in-use':'Bu email artıq qeydiyyatdadır',
+  'auth/invalid-email':'Email düzgün deyil',
+  'auth/wrong-password':'Şifrə yanlışdır',
+  'auth/invalid-credential':'Email və ya şifrə yanlışdır',
+  'auth/user-not-found':'İstifadəçi tapılmadı',
+  'auth/too-many-requests':'Çox cəhd — bir az gözləyin',
+  'auth/popup-closed-by-user':'Pəncərə bağlandı',
+  'auth/network-request-failed':'İnternet bağlantısı yoxdur',
+  'auth/weak-password':'Şifrə çox sadədir'
+};
+function showErr(c){ var e=document.getElementById('authError'); e.textContent=ERRS[c]||'Xəta: '+c; e.style.display='block'; }
+function clearErr(){ var e=document.getElementById('authError'); e.textContent=''; e.style.display='none'; }
+function showToast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; setTimeout(function(){ t.style.display='none'; },3500); }
+function show(id){ document.getElementById(id).style.display='block'; }
+function hide(id){ document.getElementById(id).style.display='none'; }
+function val(id){ return document.getElementById(id).value.trim(); }
+function setBtnLoad(id, loading) {
+  var btn = document.getElementById(id);
+  if (loading) { btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>'; }
+  else { btn.disabled=false; }
+}
+function switchTab(t) {
+  ['login','register'].forEach(function(x){
+    document.getElementById('tab-'+x).classList.toggle('active', x===t);
+    document.getElementById('panel-'+x).classList.toggle('active', x===t);
+  });
+  clearErr();
+}
+function doSave(tableId, testName) {
+  var rows = Array.from(document.getElementById(tableId).querySelectorAll('tbody tr'));
+  var data = rows.map(function(row) {
+    var label   = row.querySelectorAll('td')[0].textContent.trim();
+    var checked = row.querySelector('input[type=checkbox]') ? row.querySelector('input[type=checkbox]').checked : false;
+    var notes   = Array.from(row.querySelectorAll('input:not([type=checkbox])')).map(function(i){ return i.value.trim(); }).filter(Boolean).join(' | ');
+    return { label:label, tanindi:checked, qeyd:notes||'—' };
+  });
+  saveResult(testName, data);
 }
 </script>
 
@@ -127,109 +269,124 @@ function showToast(msg) {
 :root{
   --bordo:#7B1F2E;--bordo2:#9E2D40;--gold:#C9973B;
   --cream:#FAF7F2;--ink:#1A1118;--muted:#6B6070;
-  --card:#FFFFFF;--border:#E8E2DA;--green:#2E7D52;
+  --card:#fff;--border:#E8E2DA;--green:#2E7D52;
   --r:14px;--shadow:0 4px 24px rgba(0,0,0,.08);
 }
 html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;min-height:100vh}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
 
-/* AUTH WALL */
+/* ── AUTH WALL ── */
 #authWall{min-height:100vh;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(160deg,rgba(123,31,46,.09) 0%,transparent 55%),
-             linear-gradient(340deg,rgba(201,151,59,.07) 0%,transparent 55%),var(--cream);
-  padding:1.5rem}
+  linear-gradient(340deg,rgba(201,151,59,.07) 0%,transparent 55%),var(--cream);padding:1.5rem}
 .auth-box{background:var(--card);border-radius:24px;
-  box-shadow:0 24px 64px rgba(123,31,46,.16),0 2px 8px rgba(0,0,0,.06);
-  padding:2.4rem 2rem;width:100%;max-width:400px;text-align:center}
-.auth-logo-img{width:72px;height:72px;border-radius:18px;object-fit:contain;
-  background:var(--bordo);padding:6px;margin:0 auto 1.1rem;display:block}
-.auth-title{font-family:'Playfair Display',serif;font-size:1.25rem;
-  color:var(--bordo);line-height:1.25;margin-bottom:.3rem}
-.auth-sub{font-size:.78rem;color:var(--muted);margin-bottom:1.8rem}
+  box-shadow:0 24px 64px rgba(123,31,46,.15);
+  padding:2.2rem 1.8rem;width:100%;max-width:400px}
+.auth-logo{text-align:center;margin-bottom:1.4rem}
+.auth-logo img{width:68px;height:68px;border-radius:16px;object-fit:contain;
+  background:var(--bordo);padding:5px;margin-bottom:.7rem}
+.auth-logo h2{font-family:'Playfair Display',serif;font-size:1.15rem;
+  color:var(--bordo);line-height:1.25}
+.auth-logo p{font-size:.75rem;color:var(--muted);margin-top:.2rem}
 
-.btn-google{width:100%;padding:.85rem 1.2rem;border-radius:50px;
-  border:2px solid var(--border);background:#fff;
-  font-family:'Inter',sans-serif;font-size:.92rem;font-weight:500;
+.auth-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.3rem}
+.auth-tab{flex:1;padding:.6rem;text-align:center;font-size:.84rem;font-weight:500;
+  color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;
+  margin-bottom:-2px;transition:all .2s}
+.auth-tab.active{color:var(--bordo);border-color:var(--bordo)}
+.auth-panel{display:none}.auth-panel.active{display:block}
+
+.btn-google{width:100%;padding:.82rem;border-radius:50px;border:2px solid var(--border);
+  background:#fff;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:500;
   color:#3c3c3c;cursor:pointer;transition:all .25s;
-  display:flex;align-items:center;justify-content:center;gap:.7rem;
-  box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.btn-google:hover{border-color:#4285F4;background:#f4f8ff;
-  box-shadow:0 4px 16px rgba(66,133,244,.2);transform:translateY(-1px)}
-.btn-google:active{transform:translateY(0)}
-.btn-google img{width:22px}
+  display:flex;align-items:center;justify-content:center;gap:.65rem;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:.9rem}
+.btn-google:hover{border-color:#4285F4;background:#f4f8ff;transform:translateY(-1px)}
+.btn-google img{width:20px}
+.divider{display:flex;align-items:center;gap:.5rem;margin:.8rem 0;
+  color:var(--muted);font-size:.74rem}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
 
-.auth-note{margin-top:1.4rem;font-size:.72rem;color:var(--muted);
-  line-height:1.6;padding:.7rem;background:rgba(123,31,46,.04);
-  border-radius:10px;border:1px solid rgba(123,31,46,.1)}
+.ai-wrap{position:relative;margin-bottom:.78rem}
+.ai-wrap i{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);
+  color:var(--muted);font-size:.82rem}
+.ai{width:100%;padding:.7rem .85rem .7rem 2.3rem;border:1.5px solid var(--border);
+  border-radius:50px;font-family:'Inter',sans-serif;font-size:.86rem;
+  background:var(--cream);color:var(--ink);transition:border-color .2s}
+.ai:focus{outline:none;border-color:var(--bordo)}
 
+.btn-auth{width:100%;padding:.78rem;border:none;border-radius:50px;
+  font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;
+  cursor:pointer;transition:all .22s;display:flex;align-items:center;
+  justify-content:center;gap:.45rem;background:var(--bordo);color:#fff}
+.btn-auth:hover{background:var(--bordo2);transform:translateY(-1px);
+  box-shadow:0 6px 20px rgba(123,31,46,.25)}
+.btn-auth:disabled{opacity:.6;cursor:not-allowed;transform:none}
 #authError{display:none;background:#fef0f0;border:1px solid #fcc;
-  border-radius:10px;padding:.6rem .9rem;font-size:.78rem;
-  color:#c0392b;margin-top:.9rem;text-align:left}
+  border-radius:10px;padding:.55rem .85rem;font-size:.78rem;
+  color:#c0392b;margin-top:.75rem}
 
-/* APP SHELL */
+/* ── NAV ── */
 #appShell{display:none}
-
-/* NAV */
 .top-nav{position:sticky;top:0;z-index:100;
   background:rgba(250,247,242,.95);backdrop-filter:blur(12px);
   border-bottom:1px solid var(--border);
   padding:0 clamp(1rem,4vw,2.5rem);
-  display:flex;align-items:center;justify-content:space-between;
-  height:62px;gap:1rem}
+  display:flex;align-items:center;justify-content:space-between;height:62px;gap:1rem}
 .nav-brand{display:flex;align-items:center;gap:.6rem;
-  font-family:'Playfair Display',serif;font-size:1rem;
-  color:var(--bordo);font-weight:700;text-decoration:none;flex-shrink:0}
+  font-family:'Playfair Display',serif;font-size:1rem;color:var(--bordo);
+  font-weight:700;text-decoration:none;flex-shrink:0}
 .nav-brand img{width:34px;border-radius:8px}
-.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links{display:flex;gap:1.4rem;list-style:none}
 .nav-links a{font-size:.8rem;color:var(--muted);text-decoration:none;transition:color .2s}
 .nav-links a:hover{color:var(--bordo)}
-.nav-user{display:flex;align-items:center;gap:.65rem;font-size:.8rem;color:var(--muted);flex-shrink:0}
-#userAvatar{display:none;width:32px;height:32px;border-radius:50%;
+.nav-right{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
+#userAvatar{display:none;width:30px;height:30px;border-radius:50%;
   object-fit:cover;border:2px solid var(--bordo)}
-.btn-logout{padding:.32rem .85rem;border-radius:50px;
-  border:1.5px solid var(--border);background:transparent;
-  font-size:.76rem;color:var(--muted);cursor:pointer;transition:all .2s}
-.btn-logout:hover{border-color:var(--bordo);color:var(--bordo)}
+#userName{font-size:.8rem;color:var(--muted)}
+.btn-sm{padding:.3rem .8rem;border-radius:50px;border:1.5px solid var(--border);
+  background:transparent;font-size:.75rem;color:var(--muted);cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:.3rem}
+.btn-sm:hover{border-color:var(--bordo);color:var(--bordo)}
+#adminBtn{display:none;background:var(--bordo);color:#fff;border-color:var(--bordo)}
+#adminBtn:hover{background:var(--bordo2)}
 
-/* HERO */
-.hero{background:linear-gradient(155deg,#7B1F2E 0%,#5a1522 100%);
-  color:#fff;padding:clamp(3rem,8vw,5rem) clamp(1rem,5vw,3rem);
-  text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;opacity:.4;
-  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(201,151,59,.3),transparent)}
+/* ── HERO ── */
+.hero{background:linear-gradient(155deg,#7B1F2E 0%,#5a1522 100%);color:#fff;
+  padding:clamp(3rem,8vw,5rem) clamp(1rem,5vw,3rem);text-align:center;
+  position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(201,151,59,.25),transparent)}
 .hero-in{position:relative;max-width:680px;margin:0 auto}
 .hero-tag{display:inline-block;background:rgba(201,151,59,.18);
   border:1px solid rgba(201,151,59,.4);color:#e8c87a;
   padding:.28rem 1.1rem;border-radius:50px;font-size:.72rem;
   letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.2rem}
-.hero h1{font-family:'Playfair Display',serif;
-  font-size:clamp(1.8rem,5vw,3rem);font-weight:700;
-  line-height:1.15;margin-bottom:.8rem}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,3rem);
+  font-weight:700;line-height:1.15;margin-bottom:.8rem}
 .hero h1 em{font-style:italic;color:#e8c87a}
 .hero p{color:rgba(255,255,255,.62);font-size:clamp(.88rem,2vw,1rem);
-  max-width:480px;margin:0 auto 2rem}
+  max-width:480px;margin:0 auto}
 .hero-stats{display:flex;flex-wrap:wrap;gap:2rem;justify-content:center;
   margin-top:2.5rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,.14)}
 .h-stat{text-align:center}
 .h-num{font-family:'Playfair Display',serif;font-size:1.8rem;color:#e8c87a;line-height:1}
 .h-lbl{font-size:.7rem;color:rgba(255,255,255,.46);margin-top:.2rem}
 
-/* SECTION */
+/* ── SECTIONS ── */
 .section{padding:clamp(2.5rem,7vw,5rem) clamp(1rem,5vw,3rem)}
 .s-inner{max-width:1100px;margin:0 auto}
 .sec-tag{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--gold);font-weight:600;display:block;margin-bottom:.45rem}
-.sec-title{font-family:'Playfair Display',serif;
-  font-size:clamp(1.5rem,3.5vw,2.3rem);color:var(--ink);
-  line-height:1.2;margin-bottom:.7rem}
-.sec-lead{color:var(--muted);font-size:.92rem;max-width:560px;margin-bottom:0}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,3.5vw,2.3rem);
+  color:var(--ink);line-height:1.2;margin-bottom:.7rem}
+.sec-lead{color:var(--muted);font-size:.92rem;max-width:560px}
 
-/* TEST CARDS */
+/* ── TEST CARDS ── */
 .tests-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));
   gap:1.4rem;margin-top:2.4rem}
 .tc{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);
-  overflow:hidden;display:flex;flex-direction:column;
-  transition:transform .3s,box-shadow .3s}
+  overflow:hidden;display:flex;flex-direction:column;transition:transform .3s,box-shadow .3s}
 .tc:hover{transform:translateY(-4px);box-shadow:0 14px 44px rgba(123,31,46,.12)}
 .tc-stripe{height:4px}
 .s-r{background:linear-gradient(90deg,#7B1F2E,#c94060)}
@@ -238,141 +395,220 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);lin
 .tc-hd{padding:1.3rem 1.3rem .7rem;display:flex;align-items:flex-start;gap:.9rem}
 .tc-ic{width:48px;height:48px;flex-shrink:0;border-radius:13px;
   display:flex;align-items:center;justify-content:center;font-size:1.35rem}
-.ic-r{background:rgba(123,31,46,.09)}
-.ic-g{background:rgba(201,151,59,.11)}
-.ic-gr{background:rgba(46,125,82,.09)}
-.tc-hd h3{font-family:'Playfair Display',serif;font-size:1.1rem;
-  color:var(--ink);margin-bottom:.18rem}
+.ic-r{background:rgba(123,31,46,.09)}.ic-g{background:rgba(201,151,59,.11)}.ic-gr{background:rgba(46,125,82,.09)}
+.tc-hd h3{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--ink);margin-bottom:.18rem}
 .tc-hd p{font-size:.76rem;color:var(--muted)}
 .tc-bd{padding:0 1.3rem 1.3rem;flex:1}
-
-/* TABLE */
 .et{width:100%;border-collapse:collapse;font-size:.78rem}
 .et thead th{background:var(--ink);color:#fff;padding:.5rem .65rem;
   text-align:left;font-weight:500;font-size:.7rem}
-.et thead th:first-child{border-radius:7px 0 0 0}
-.et thead th:last-child{border-radius:0 7px 0 0}
+.et thead th:first-child{border-radius:7px 0 0 0}.et thead th:last-child{border-radius:0 7px 0 0}
 .et td{padding:.5rem .65rem;border-bottom:1px solid var(--border);vertical-align:middle}
 .et tr:hover td{background:rgba(123,31,46,.025)}
 .chk{width:18px;height:18px;cursor:pointer;accent-color:var(--bordo)}
-.ni{width:100%;border:1px solid var(--border);border-radius:6px;
-  padding:.3rem .48rem;font-size:.73rem;font-family:'Inter',sans-serif;
-  background:var(--cream);color:var(--ink)}
+.ni{width:100%;border:1px solid var(--border);border-radius:6px;padding:.3rem .48rem;
+  font-size:.73rem;font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink)}
 .ni:focus{outline:none;border-color:var(--bordo)}
+.save-btn{margin-top:.9rem;width:100%;padding:.68rem;border-radius:50px;border:none;
+  background:var(--bordo);color:#fff;font-size:.84rem;font-weight:600;cursor:pointer;
+  transition:all .22s;display:flex;align-items:center;justify-content:center;gap:.45rem}
+.save-btn:hover{background:var(--bordo2);transform:translateY(-1px)}
 
-.save-btn{margin-top:.9rem;width:100%;padding:.68rem;border-radius:50px;
-  border:none;background:var(--bordo);color:#fff;font-size:.84rem;
-  font-weight:600;cursor:pointer;transition:all .22s;
-  display:flex;align-items:center;justify-content:center;gap:.45rem}
-.save-btn:hover{background:var(--bordo2);transform:translateY(-1px);
-  box-shadow:0 6px 20px rgba(123,31,46,.25)}
-.save-btn:active{transform:translateY(0)}
-
-/* PRINCIPLES */
+/* ── PRINCIPLES ── */
 .prc-sec{background:#160e12}
-.prc-sec .sec-title{color:#fff}
-.prc-sec .sec-lead{color:rgba(255,255,255,.4)}
-.prc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-  gap:.9rem;margin-top:2.2rem}
+.prc-sec .sec-title{color:#fff}.prc-sec .sec-lead{color:rgba(255,255,255,.4)}
+.prc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.9rem;margin-top:2.2rem}
 .prc-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
   border-radius:var(--r);padding:1.3rem;transition:background .2s}
 .prc-item:hover{background:rgba(255,255,255,.08)}
-.prc-num{font-family:'Playfair Display',serif;font-size:1.9rem;
-  color:var(--gold);line-height:1;margin-bottom:.45rem}
+.prc-num{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--gold);line-height:1;margin-bottom:.45rem}
 .prc-item h4{color:#fff;font-size:.88rem;margin-bottom:.25rem}
 .prc-item p{color:rgba(255,255,255,.42);font-size:.76rem}
 
-/* TIPS */
-.tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-  gap:.9rem;margin-top:1.8rem}
+/* ── TIPS ── */
+.tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.9rem;margin-top:1.8rem}
 .tip{background:var(--card);border-radius:var(--r);padding:1.1rem;
   border-left:4px solid var(--bordo);box-shadow:0 1px 8px rgba(0,0,0,.04)}
 .tip h4{font-size:.88rem;color:var(--ink);margin-bottom:.25rem}
 .tip p{font-size:.76rem;color:var(--muted)}
 
-/* ETHICS */
+/* ── ETHICS ── */
 .eth-sec{background:rgba(123,31,46,.04);border-top:1px solid var(--border)}
 .eth-pills{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.8rem}
 .eth-pill{background:var(--card);border-radius:50px;padding:.5rem 1.1rem;
-  font-size:.82rem;color:var(--ink);font-weight:500;
-  border:1.5px solid var(--border);display:flex;align-items:center;gap:.45rem;
-  box-shadow:0 1px 6px rgba(0,0,0,.04)}
+  font-size:.82rem;color:var(--ink);font-weight:500;border:1.5px solid var(--border);
+  display:flex;align-items:center;gap:.45rem;box-shadow:0 1px 6px rgba(0,0,0,.04)}
 .ep-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
 
-/* CONTACT */
+/* ── CONTACT ── */
 .ct-sec{background:var(--card);border-top:1px solid var(--border)}
-.ct-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:1rem;margin-top:1.8rem}
+.ct-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:1.8rem}
 .ct-card{background:var(--cream);border-radius:var(--r);padding:1.15rem;
   border:1.5px solid var(--border);display:flex;align-items:center;gap:.9rem;
   text-decoration:none;color:var(--ink);transition:all .22s}
-.ct-card:hover{border-color:var(--bordo);
-  box-shadow:0 4px 16px rgba(123,31,46,.1);transform:translateY(-2px)}
+.ct-card:hover{border-color:var(--bordo);box-shadow:0 4px 16px rgba(123,31,46,.1);transform:translateY(-2px)}
 .ct-ic{width:44px;height:44px;flex-shrink:0;border-radius:12px;
   display:flex;align-items:center;justify-content:center;font-size:1.15rem}
 .ci-r{background:rgba(123,31,46,.1);color:var(--bordo)}
 .ci-ig{background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff}
 .ci-loc{background:rgba(46,125,82,.1);color:var(--green)}
-.ct-txt label{display:block;font-size:.68rem;color:var(--muted);margin-bottom:.08rem;cursor:pointer}
+.ct-txt label{display:block;font-size:.68rem;color:var(--muted);margin-bottom:.08rem}
 .ct-txt span{font-size:.86rem;font-weight:500}
 
-/* FOOTER */
-footer{background:#0f0a0d;color:rgba(255,255,255,.38);
-  padding:2.5rem clamp(1rem,5vw,3rem);text-align:center}
+/* ── FOOTER ── */
+footer{background:#0f0a0d;color:rgba(255,255,255,.38);padding:2.5rem clamp(1rem,5vw,3rem);text-align:center}
 .f-logo{width:50px;height:50px;border-radius:11px;margin-bottom:.75rem}
-.f-name{font-family:'Playfair Display',serif;font-size:1.05rem;
-  color:rgba(255,255,255,.72);margin-bottom:.25rem}
-.f-sep{border:none;border-top:1px solid rgba(255,255,255,.07);
-  margin:1.1rem auto;max-width:280px}
+.f-name{font-family:'Playfair Display',serif;font-size:1.05rem;color:rgba(255,255,255,.72);margin-bottom:.25rem}
+.f-sep{border:none;border-top:1px solid rgba(255,255,255,.07);margin:1.1rem auto;max-width:280px}
 .f-links{display:flex;flex-wrap:wrap;gap:.45rem 1.3rem;justify-content:center}
 .f-links a{color:var(--gold);text-decoration:none;font-size:.78rem}
 .f-links a:hover{color:#e8c87a}
 .f-by{font-size:.76rem;margin-top:.45rem}
 
-/* TOAST */
+/* ── ADMIN PANEL ── */
+#adminPanel{display:none;min-height:100vh;background:var(--cream)}
+.admin-nav{background:var(--bordo);color:#fff;padding:1rem 1.5rem;
+  display:flex;align-items:center;justify-content:space-between}
+.admin-nav h2{font-family:'Playfair Display',serif;font-size:1.2rem}
+.admin-close{background:rgba(255,255,255,.15);border:none;color:#fff;
+  padding:.4rem 1rem;border-radius:50px;cursor:pointer;font-size:.82rem;transition:all .2s}
+.admin-close:hover{background:rgba(255,255,255,.25)}
+.admin-body{padding:1.5rem;max-width:1000px;margin:0 auto}
+
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--card);border-radius:var(--r);padding:1.2rem;
+  box-shadow:var(--shadow);text-align:center}
+.stat-card .num{font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--bordo);line-height:1}
+.stat-card .lbl{font-size:.76rem;color:var(--muted);margin-top:.3rem}
+
+.admin-tabs{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.a-tab{padding:.45rem 1rem;border-radius:50px;border:1.5px solid var(--border);
+  background:transparent;font-size:.8rem;color:var(--muted);cursor:pointer;transition:all .2s}
+.a-tab.active,.a-tab:hover{background:var(--bordo);color:#fff;border-color:var(--bordo)}
+
+.admin-section{display:none}.admin-section.active{display:block}
+
+.search-wrap{position:relative;margin-bottom:1rem}
+.search-wrap i{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.82rem}
+.search-inp{width:100%;padding:.6rem .8rem .6rem 2.2rem;border:1.5px solid var(--border);
+  border-radius:50px;font-size:.84rem;background:var(--card);color:var(--ink);font-family:'Inter',sans-serif}
+.search-inp:focus{outline:none;border-color:var(--bordo)}
+
+.result-card{background:var(--card);border-radius:var(--r);margin-bottom:1rem;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);overflow:hidden}
+.rc-header{padding:.9rem 1rem;background:rgba(123,31,46,.04);
+  border-bottom:1px solid var(--border);display:flex;
+  justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
+.rc-info{display:flex;flex-direction:column}
+.rc-name{font-weight:600;font-size:.88rem;color:var(--ink)}
+.rc-email{font-size:.72rem;color:var(--muted)}
+.rc-meta{display:flex;flex-direction:column;align-items:flex-end}
+.rc-test{font-size:.78rem;font-weight:600;color:var(--bordo);
+  background:rgba(123,31,46,.08);padding:.2rem .6rem;border-radius:50px}
+.rc-date{font-size:.7rem;color:var(--muted);margin-top:.2rem}
+.rc-body{padding:.8rem 1rem}
+.rc-row{display:flex;align-items:center;gap:.6rem;padding:.3rem 0;
+  border-bottom:1px solid var(--border);font-size:.8rem}
+.rc-row:last-child{border:none}
+.rc-label{flex:1;color:var(--ink)}
+.rc-check{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+.rc-check.yes{background:rgba(46,125,82,.12);color:var(--green)}
+.rc-check.no{background:rgba(192,57,43,.1);color:#c0392b}
+.rc-note{font-size:.74rem;color:var(--muted);font-style:italic;max-width:200px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.user-row{display:flex;align-items:center;gap:1rem;padding:.7rem;
+  background:var(--card);border-radius:10px;margin-bottom:.5rem;
+  box-shadow:0 1px 6px rgba(0,0,0,.04);flex-wrap:wrap}
+.ur-name{font-weight:500;font-size:.86rem;min-width:120px}
+.ur-email{font-size:.78rem;color:var(--muted);flex:1}
+.ur-date{font-size:.72rem;color:var(--muted)}
+
+.admin-loading{text-align:center;padding:3rem;color:var(--muted);font-size:1.2rem}
+.admin-empty{text-align:center;padding:3rem;color:var(--muted)}
+.admin-empty i{font-size:2.5rem;margin-bottom:.8rem;display:block;opacity:.3}
+
+/* ── TOAST ── */
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);
   background:var(--green);color:#fff;padding:.7rem 1.8rem;border-radius:50px;
   font-size:.88rem;font-weight:600;box-shadow:0 6px 24px rgba(0,0,0,.2);
   z-index:9999;display:none;white-space:nowrap}
 
-/* FADE */
+/* ── FADE ── */
 .fade{opacity:0;transform:translateY(16px);transition:.55s ease}
 .fade.in{opacity:1;transform:none}
 
 @media(max-width:640px){
-  .nav-links{display:none}
-  .nav-brand span{display:none}
-  .auth-box{padding:2rem 1.3rem}
+  .nav-links{display:none}.nav-brand span{display:none}
+  .auth-box{padding:1.8rem 1.3rem}
+  .rc-header{flex-direction:column;align-items:flex-start}
+  .rc-meta{align-items:flex-start}
 }
 @media(prefers-reduced-motion:reduce){.fade{opacity:1;transform:none}}
 </style>
 </head>
 <body>
 
-<!-- ═══════════ AUTH WALL ═══════════ -->
+<!-- ═══ AUTH WALL ═══ -->
 <div id="authWall">
   <div class="auth-box">
-    <img class="auth-logo-img"
-         src="https://raw.githubusercontent.com/Samir210-az/an-merkezi/main/logo.png"
-         alt="AN Logo" onerror="this.style.display='none'">
-    <h2 class="auth-title">AN Psixoloji Dəstək<br>və Reabilitasiya Mərkəzi</h2>
-    <p class="auth-sub">Test Platformasına Xoş Gəldiniz</p>
-
-    <button class="btn-google" onclick="loginGoogle()">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-      Google hesabı ilə daxil ol
-    </button>
-
-    <div class="auth-note">
-      🔒 Məlumatlarınız təhlükəsizdir. Platforma yalnız psixoloqlar və mütəxəssislər üçün nəzərdə tutulub.
+    <div class="auth-logo">
+      <img src="https://raw.githubusercontent.com/Samir210-az/an-merkezi/main/logo.png"
+           alt="AN" onerror="this.style.display='none'">
+      <h2>AN Psixoloji Dəstək<br>və Reabilitasiya Mərkəzi</h2>
+      <p>Test Platformasına Xoş Gəldiniz</p>
     </div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login" onclick="switchTab('login')">Daxil ol</div>
+      <div class="auth-tab" id="tab-register" onclick="switchTab('register')">Qeydiyyat</div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="auth-panel active" id="panel-login">
+      <button class="btn-google" onclick="loginGoogle()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
+        Google ilə daxil ol
+      </button>
+      <div class="divider">və ya e-poçtla</div>
+      <div class="ai-wrap"><i class="fas fa-envelope"></i>
+        <input class="ai" id="loginEmail" type="email" placeholder="E-poçt ünvanı" autocomplete="email"></div>
+      <div class="ai-wrap"><i class="fas fa-lock"></i>
+        <input class="ai" id="loginPass" type="password" placeholder="Şifrə" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')loginEmail()"></div>
+      <button class="btn-auth" id="loginBtn" onclick="loginEmail()">
+        <i class="fas fa-sign-in-alt"></i> Daxil ol
+      </button>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="auth-panel" id="panel-register">
+      <button class="btn-google" onclick="loginGoogle()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
+        Google ilə qeydiyyat
+      </button>
+      <div class="divider">və ya e-poçtla</div>
+      <div class="ai-wrap"><i class="fas fa-user"></i>
+        <input class="ai" id="regName" type="text" placeholder="Ad Soyad"></div>
+      <div class="ai-wrap"><i class="fas fa-envelope"></i>
+        <input class="ai" id="regEmail" type="email" placeholder="E-poçt ünvanı"></div>
+      <div class="ai-wrap"><i class="fas fa-lock"></i>
+        <input class="ai" id="regPass" type="password" placeholder="Şifrə (min 6 simvol)"></div>
+      <div class="ai-wrap"><i class="fas fa-lock"></i>
+        <input class="ai" id="regPass2" type="password" placeholder="Şifrəni təkrarlayın"
+          onkeydown="if(event.key==='Enter')registerEmail()"></div>
+      <button class="btn-auth" id="regBtn" onclick="registerEmail()">
+        <i class="fas fa-user-plus"></i> Qeydiyyatdan keç
+      </button>
+    </div>
+
     <div id="authError"></div>
   </div>
 </div>
 
-<!-- ═══════════ APP SHELL ═══════════ -->
+<!-- ═══ APP SHELL ═══ -->
 <div id="appShell">
-
   <nav class="top-nav">
     <a href="#" class="nav-brand">
       <img src="https://raw.githubusercontent.com/Samir210-az/an-merkezi/main/logo.png"
@@ -385,16 +621,18 @@ footer{background:#0f0a0d;color:rgba(255,255,255,.38);
       <li><a href="#etika">Etika</a></li>
       <li><a href="#elaqe">Əlaqə</a></li>
     </ul>
-    <div class="nav-user">
+    <div class="nav-right">
       <img id="userAvatar" src="" alt="">
       <span id="userName"></span>
-      <button class="btn-logout" onclick="doLogout()">
+      <button class="btn-sm" id="adminBtn" onclick="openAdmin()">
+        <i class="fas fa-shield-alt"></i> Admin
+      </button>
+      <button class="btn-sm" onclick="doLogout()">
         <i class="fas fa-sign-out-alt"></i> Çıxış
       </button>
     </div>
   </nav>
 
-  <!-- HERO -->
   <header class="hero">
     <div class="hero-in">
       <span class="hero-tag">AN Psixoloji Dəstək və Reabilitasiya Mərkəzi</span>
@@ -415,29 +653,23 @@ footer{background:#0f0a0d;color:rgba(255,255,255,.38);
       <span class="sec-tag">Qiymətləndirmə Alətləri</span>
       <h2 class="sec-title">Test Nümunələri</h2>
       <p class="sec-lead">Üç əsas sahədə uşağın inkişaf səviyyəsini interaktiv olaraq qeydə alın.</p>
-
       <div class="tests-grid">
 
-        <!-- TEST 1: Emosional -->
         <div class="tc fade">
           <div class="tc-stripe s-r"></div>
-          <div class="tc-hd">
-            <div class="tc-ic ic-r">🧠</div>
-            <div>
-              <h3>Sosial-Emosional İnkişaf</h3>
-              <p>Emosiyaları tanıma, başa düşmə və ifadə etmə</p>
-            </div>
+          <div class="tc-hd"><div class="tc-ic ic-r">🧠</div>
+            <div><h3>Sosial-Emosional İnkişaf</h3><p>Emosiyaları tanıma, başa düşmə və ifadə etmə</p></div>
           </div>
           <div class="tc-bd">
             <div style="overflow-x:auto">
               <table class="et" id="tbl1">
-                <thead><tr><th>Emosiya</th><th>Tanındı</th><th>Qeyd / Şərh</th></tr></thead>
+                <thead><tr><th>Emosiya</th><th>Tanındı</th><th>Qeyd</th></tr></thead>
                 <tbody>
-                  <tr><td>😊 Sevinc</td>  <td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Açıqlama..."></td></tr>
-                  <tr><td>😢 Kədər</td>   <td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Açıqlama..."></td></tr>
-                  <tr><td>😨 Qorxu</td>   <td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Açıqlama..."></td></tr>
-                  <tr><td>😮 Təəccüb</td> <td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Açıqlama..."></td></tr>
-                  <tr><td>😠 Qəzəb</td>   <td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Açıqlama..."></td></tr>
+                  <tr><td>😊 Sevinc</td><td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Açıqlama..."></td></tr>
+                  <tr><td>😢 Kədər</td><td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Açıqlama..."></td></tr>
+                  <tr><td>😨 Qorxu</td><td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Açıqlama..."></td></tr>
+                  <tr><td>😮 Təəccüb</td><td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Açıqlama..."></td></tr>
+                  <tr><td>😠 Qəzəb</td><td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Açıqlama..."></td></tr>
                   <tr><td>😌 Sakit hal</td><td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Açıqlama..."></td></tr>
                 </tbody>
               </table>
@@ -448,33 +680,18 @@ footer{background:#0f0a0d;color:rgba(255,255,255,.38);
           </div>
         </div>
 
-        <!-- TEST 2: Koqnitiv -->
         <div class="tc fade">
           <div class="tc-stripe s-g"></div>
-          <div class="tc-hd">
-            <div class="tc-ic ic-g">💡</div>
-            <div>
-              <h3>Koqnitiv İnkişaf</h3>
-              <p>Məntiqi düşünmə, problem həlletmə, ardıcıllıq</p>
-            </div>
+          <div class="tc-hd"><div class="tc-ic ic-g">💡</div>
+            <div><h3>Koqnitiv İnkişaf</h3><p>Məntiqi düşünmə, problem həlletmə, ardıcıllıq</p></div>
           </div>
           <div class="tc-bd">
             <div style="overflow-x:auto">
               <table class="et" id="tbl2">
                 <thead><tr><th>Tapşırıq</th><th>Həll</th><th>Vaxt</th><th>Qeyd</th></tr></thead>
                 <tbody>
-                  <tr>
-                    <td>Fiqur Uyğunlaşdırma</td>
-                    <td><input type="checkbox" class="chk"></td>
-                    <td><input class="ni" placeholder="dəq" style="width:44px"></td>
-                    <td><input class="ni" placeholder="Şərh..."></td>
-                  </tr>
-                  <tr>
-                    <td>Ardıcıllıq Tamamlama</td>
-                    <td><input type="checkbox" class="chk"></td>
-                    <td><input class="ni" placeholder="dəq" style="width:44px"></td>
-                    <td><input class="ni" placeholder="Şərh..."></td>
-                  </tr>
+                  <tr><td>Fiqur Uyğunlaşdırma</td><td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="dəq" style="width:44px"></td><td><input class="ni" placeholder="Şərh..."></td></tr>
+                  <tr><td>Ardıcıllıq Tamamlama</td><td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="dəq" style="width:44px"></td><td><input class="ni" placeholder="Şərh..."></td></tr>
                 </tbody>
               </table>
             </div>
@@ -484,27 +701,22 @@ footer{background:#0f0a0d;color:rgba(255,255,255,.38);
           </div>
         </div>
 
-        <!-- TEST 3: Motor -->
         <div class="tc fade">
           <div class="tc-stripe s-gr"></div>
-          <div class="tc-hd">
-            <div class="tc-ic ic-gr">🏃</div>
-            <div>
-              <h3>Motor Bacarıqlar</h3>
-              <p>İri və kiçik motor bacarıqları, koordinasiya</p>
-            </div>
+          <div class="tc-hd"><div class="tc-ic ic-gr">🏃</div>
+            <div><h3>Motor Bacarıqlar</h3><p>İri və kiçik motor bacarıqları, koordinasiya</p></div>
           </div>
           <div class="tc-bd">
             <div style="overflow-x:auto">
               <table class="et" id="tbl3">
                 <thead><tr><th>Bacarıq</th><th>İcra</th><th>Tövsiyə</th></tr></thead>
                 <tbody>
-                  <tr><td>Düz xətt boyunca yerimə</td>  <td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Məsləhət..."></td></tr>
-                  <tr><td>Top atma və tutma</td>         <td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Məsləhət..."></td></tr>
-                  <tr><td>Bir ayaq üzərində dayanma</td> <td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Məsləhət..."></td></tr>
-                  <tr><td>Kiçik kubikləri yığma</td>     <td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Məsləhət..."></td></tr>
-                  <tr><td>Puzzle həll etmə</td>          <td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Məsləhət..."></td></tr>
-                  <tr><td>Qələmlə sadə şəkil çəkmə</td> <td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Məsləhət..."></td></tr>
+                  <tr><td>Düz xətt boyunca yerimə</td><td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Məsləhət..."></td></tr>
+                  <tr><td>Top atma və tutma</td><td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Məsləhət..."></td></tr>
+                  <tr><td>Bir ayaq üzərində dayanma</td><td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Məsləhət..."></td></tr>
+                  <tr><td>Kiçik kubikləri yığma</td><td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Məsləhət..."></td></tr>
+                  <tr><td>Puzzle həll etmə</td><td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Məsləhət..."></td></tr>
+                  <tr><td>Qələmlə sadə şəkil çəkmə</td><td><input type="checkbox" class="chk"></td><td><input class="ni" placeholder="Məsləhət..."></td></tr>
                 </tbody>
               </table>
             </div>
@@ -518,7 +730,6 @@ footer{background:#0f0a0d;color:rgba(255,255,255,.38);
     </div>
   </section>
 
-  <!-- PRINCIPLES -->
   <section class="section prc-sec" id="prinsiplər">
     <div class="s-inner">
       <span class="sec-tag">Əsas Yanaşma</span>
@@ -526,29 +737,27 @@ footer{background:#0f0a0d;color:rgba(255,255,255,.38);
       <p class="sec-lead">Hər test seansı bu dəyərlər üzərində qurulur.</p>
       <div class="prc-grid">
         <div class="prc-item fade"><div class="prc-num">01</div><h4>Yaşa Uyğunluq</h4><p>Hər tapşırıq uşağın yaş səviyyəsinə uyğunlaşdırılmalıdır.</p></div>
-        <div class="prc-item fade"><div class="prc-num">02</div><h4>Səbir və Mehribanlıq</h4><p>Psixoloq bütün seans boyu həssas və dəstəkləyici olmalıdır.</p></div>
+        <div class="prc-item fade"><div class="prc-num">02</div><h4>Səbir və Mehribanlıq</h4><p>Psixoloq bütün seans boyu həssas olmalıdır.</p></div>
         <div class="prc-item fade"><div class="prc-num">03</div><h4>Həvəsləndirmə</h4><p>Uşağı hər uğurlu addımda mükafatlandırmaq vacibdir.</p></div>
-        <div class="prc-item fade"><div class="prc-num">04</div><h4>Zorla İcra Yoxdur</h4><p>Heç bir tapşırıq məcburi olaraq yerinə yetirilməməlidir.</p></div>
+        <div class="prc-item fade"><div class="prc-num">04</div><h4>Zorla İcra Yoxdur</h4><p>Heç bir tapşırıq məcburi yerinə yetirilməməlidir.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- TIPS -->
   <section class="section" id="tövsiyələr">
     <div class="s-inner">
       <span class="sec-tag">Mütəxəssis Məsləhəti</span>
       <h2 class="sec-title">Test Keçirmə Tövsiyələri</h2>
       <div class="tips-grid">
         <div class="tip fade"><h4>🏠 Rahat Mühit</h4><p>Uşağın rahat hiss edəcəyi sakit, işıqlı məkan seçin.</p></div>
-        <div class="tip fade"><h4>⏱ Vaxt Ayırın</h4><p>Tələsməyin. Hər tapşırıqla tanışlıq üçün vaxt verin.</p></div>
+        <div class="tip fade"><h4>⏱ Vaxt Ayırın</h4><p>Tələsməyin. Hər tapşırıq üçün vaxt verin.</p></div>
         <div class="tip fade"><h4>💙 Səbirli Olun</h4><p>Cavabın gec gəlməsi normaldır — sualı sadə izah edin.</p></div>
-        <div class="tip fade"><h4>⭐ Motivasiya</h4><p>Hər uğurlu cəhdi alqışlayın — kiçik irəliləyiş də önəmlidir.</p></div>
+        <div class="tip fade"><h4>⭐ Motivasiya</h4><p>Hər uğurlu cəhdi alqışlayın.</p></div>
         <div class="tip fade"><h4>🔄 Geriyə Dönüş</h4><p>Test bitdikdən sonra valideynlərə konstruktiv dönüş verin.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- ETHICS -->
   <section class="section eth-sec" id="etika">
     <div class="s-inner">
       <span class="sec-tag">Peşə Standartları</span>
@@ -565,7 +774,6 @@ footer{background:#0f0a0d;color:rgba(255,255,255,.38);
     </div>
   </section>
 
-  <!-- CONTACT -->
   <section class="section ct-sec" id="elaqe">
     <div class="s-inner">
       <span class="sec-tag">Bizimlə Əlaqə</span>
@@ -588,57 +796,73 @@ footer{background:#0f0a0d;color:rgba(255,255,255,.38);
     </div>
   </section>
 
-  <!-- FOOTER -->
   <footer>
-    <img class="f-logo"
-         src="https://raw.githubusercontent.com/Samir210-az/an-merkezi/main/logo.png"
+    <img class="f-logo" src="https://raw.githubusercontent.com/Samir210-az/an-merkezi/main/logo.png"
          alt="AN" onerror="this.style.display='none'">
     <div class="f-name">AN Psixoloji Dəstək və Reabilitasiya Mərkəzi</div>
-    <p style="font-size:.76rem;margin-top:.2rem">
-      Bakı, Nizami r., Rizvan Teymurov 59 &middot; +994 55 415 72 15
-    </p>
+    <p style="font-size:.76rem;margin-top:.2rem">Bakı, Nizami r., Rizvan Teymurov 59 &middot; +994 55 415 72 15</p>
     <hr class="f-sep">
     <div class="f-links">
-      <a href="https://www.instagram.com/an_psixologiyamerkezi" target="_blank">
-        <i class="fab fa-instagram"></i> @an_psixologiyamerkezi
-      </a>
-      <a href="tel:+994554157215">
-        <i class="fas fa-phone"></i> +994 55 415 72 15
-      </a>
+      <a href="https://www.instagram.com/an_psixologiyamerkezi" target="_blank"><i class="fab fa-instagram"></i> @an_psixologiyamerkezi</a>
+      <a href="tel:+994554157215"><i class="fas fa-phone"></i> +994 55 415 72 15</a>
     </div>
-    <div class="f-by">
-      By <a href="https://www.instagram.com/s_akhundoff" target="_blank"
-            style="color:var(--gold)">@s_akhundoff</a>
-    </div>
+    <div class="f-by">By <a href="https://www.instagram.com/s_akhundoff" target="_blank" style="color:var(--gold)">@s_akhundoff</a></div>
   </footer>
+</div>
 
-</div><!-- /appShell -->
+<!-- ═══ ADMİN PANELİ ═══ -->
+<div id="adminPanel">
+  <div class="admin-nav">
+    <h2><i class="fas fa-shield-alt"></i> Admin Panel</h2>
+    <button class="admin-close" onclick="closeAdmin()"><i class="fas fa-arrow-left"></i> Geri</button>
+  </div>
+  <div class="admin-body">
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="num" id="statUsers">—</div>
+        <div class="lbl">İstifadəçi</div>
+      </div>
+      <div class="stat-card">
+        <div class="num" id="statResults">—</div>
+        <div class="lbl">Test Nəticəsi</div>
+      </div>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="a-tab active" onclick="adminTab('results',this)">
+        <i class="fas fa-clipboard-list"></i> Nəticələr
+      </button>
+      <button class="a-tab" onclick="adminTab('users',this)">
+        <i class="fas fa-users"></i> İstifadəçilər
+      </button>
+    </div>
+
+    <div class="admin-section active" id="sec-results">
+      <div class="search-wrap">
+        <i class="fas fa-search"></i>
+        <input class="search-inp" id="searchInput" placeholder="Ad, email, test adı ilə axtar..." oninput="filterResults()">
+      </div>
+      <div id="adminContent"></div>
+    </div>
+
+    <div class="admin-section" id="sec-users">
+      <div id="usersList"></div>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// TABLE → DATA collector
-function doSave(tableId, testName) {
-  var user = firebase.auth().currentUser;
-  if (!user) { showToast('❌ Əvvəlcə daxil olun!'); return; }
-
-  var rows = Array.from(document.getElementById(tableId).querySelectorAll('tbody tr'));
-  var data = rows.map(function(row) {
-    var cells = row.querySelectorAll('td');
-    var label = cells[0].textContent.trim();
-    var checked = row.querySelector('input[type=checkbox]') ? row.querySelector('input[type=checkbox]').checked : false;
-    var textInputs = Array.from(row.querySelectorAll('input:not([type=checkbox])'));
-    var notes = textInputs.map(function(i){ return i.value.trim(); }).filter(Boolean).join(' | ');
-    return { label: label, tanindi: checked, qeyd: notes || '—' };
-  });
-
-  saveResult(testName, data);
+function adminTab(name, btn) {
+  document.querySelectorAll('.admin-section').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.a-tab').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('sec-'+name).classList.add('active');
+  btn.classList.add('active');
 }
-
-// Scroll fade
-var obs = new IntersectionObserver(function(entries) {
-  entries.forEach(function(e) { if(e.isIntersecting) e.target.classList.add('in'); });
-}, { threshold: 0.08 });
+var obs = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); });
+},{threshold:.08});
 document.querySelectorAll('.fade').forEach(function(el){ obs.observe(el); });
 </script>
 </body>
