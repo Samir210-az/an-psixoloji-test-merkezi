@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M-CHAT-R Nəticələr — AN Psixoloji Mərkəzi</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bordo:#7B1F2E;--bordo2:#9E2D40;--gold:#C9973B;
+  --cream:#FAF7F2;--ink:#1A1118;--muted:#6B6070;
+  --card:#fff;--border:#E8E2DA;--green:#2E7D52;
+  --red:#C0392B;--orange:#E67E22;--r:14px;
+  --shadow:0 4px 24px rgba(0,0,0,.08);
+}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
+
+.top-nav{background:rgba(250,247,242,.97);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);padding:0 clamp(1rem,4vw,2.5rem);
+  display:flex;align-items:center;justify-content:space-between;height:62px;
+  position:sticky;top:0;z-index:100}
+.nav-brand{display:flex;align-items:center;gap:.65rem;
+  font-family:'Playfair Display',serif;font-size:1rem;
+  color:var(--bordo);font-weight:700;text-decoration:none}
+.nav-brand img{width:36px;border-radius:9px}
+.nav-right{display:flex;gap:.7rem}
+.btn-nav{padding:.38rem .9rem;border-radius:50px;border:1.5px solid var(--border);
+  background:transparent;font-size:.78rem;color:var(--muted);cursor:pointer;
+  transition:all .2s;text-decoration:none;display:flex;align-items:center;gap:.35rem}
+.btn-nav:hover{border-color:var(--bordo);color:var(--bordo)}
+.btn-nav.primary{background:var(--bordo);color:#fff;border-color:var(--bordo)}
+.btn-nav.primary:hover{background:var(--bordo2)}
+.btn-nav.danger{color:var(--red);border-color:rgba(192,57,43,.3)}
+.btn-nav.danger:hover{background:rgba(192,57,43,.08)}
+
+.page-header{background:linear-gradient(155deg,#7B1F2E,#5a1522);
+  color:#fff;padding:2.5rem clamp(1rem,5vw,3rem);text-align:center}
+.page-header h1{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,4vw,2.2rem);margin-bottom:.4rem}
+.page-header p{color:rgba(255,255,255,.6);font-size:.88rem}
+
+.main{padding:clamp(1.5rem,5vw,3rem) clamp(1rem,5vw,3rem);max-width:900px;margin:0 auto}
+
+/* SUMMARY STATS */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-bottom:2rem}
+.sum-card{background:var(--card);border-radius:var(--r);padding:1.1rem;
+  text-align:center;box-shadow:var(--shadow)}
+.sum-num{font-family:'Playfair Display',serif;font-size:2rem;color:var(--bordo);line-height:1}
+.sum-lbl{font-size:.72rem;color:var(--muted);margin-top:.25rem}
+
+/* SEARCH & FILTER */
+.toolbar{display:flex;gap:.7rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;min-width:200px}
+.search-wrap i{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.82rem}
+.search-inp{width:100%;padding:.6rem .8rem .6rem 2.2rem;border:1.5px solid var(--border);
+  border-radius:50px;font-size:.84rem;background:var(--card);color:var(--ink);font-family:'Inter',sans-serif}
+.search-inp:focus{outline:none;border-color:var(--bordo)}
+.filter-btns{display:flex;gap:.5rem;flex-wrap:wrap}
+.f-btn{padding:.4rem .9rem;border-radius:50px;border:1.5px solid var(--border);
+  background:transparent;font-size:.76rem;cursor:pointer;transition:all .2s;color:var(--muted)}
+.f-btn.active,.f-btn:hover{border-color:var(--bordo);color:var(--bordo);background:rgba(123,31,46,.05)}
+.f-btn.low.active{border-color:var(--green);color:var(--green);background:rgba(46,125,82,.07)}
+.f-btn.mid.active{border-color:var(--orange);color:var(--orange);background:rgba(230,126,34,.07)}
+.f-btn.high.active{border-color:var(--red);color:var(--red);background:rgba(192,57,43,.07)}
+
+/* RESULT CARDS */
+.result-card{background:var(--card);border-radius:var(--r);
+  box-shadow:var(--shadow);margin-bottom:1rem;overflow:hidden;cursor:pointer;
+  transition:transform .2s,box-shadow .2s;border-left:5px solid transparent}
+.result-card:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,0,0,.1)}
+.result-card.low{border-color:var(--green)}
+.result-card.mid{border-color:var(--orange)}
+.result-card.high{border-color:var(--red)}
+
+.rc-top{padding:1rem 1.2rem;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.6rem}
+.rc-child{display:flex;align-items:center;gap:.7rem}
+.rc-avatar{width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:#fff;flex-shrink:0}
+.av-low{background:var(--green)}.av-mid{background:var(--orange)}.av-high{background:var(--red)}
+.rc-name{font-weight:600;font-size:.95rem;color:var(--ink)}
+.rc-meta{font-size:.74rem;color:var(--muted);margin-top:.1rem}
+.rc-right{display:flex;align-items:center;gap:.8rem;flex-shrink:0}
+.rc-score{font-family:'Playfair Display',serif;font-size:1.8rem;line-height:1}
+.sc-low{color:var(--green)}.sc-mid{color:var(--orange)}.sc-high{color:var(--red)}
+.rc-badge{padding:.25rem .8rem;border-radius:50px;font-size:.72rem;font-weight:600}
+.bd-low{background:rgba(46,125,82,.1);color:var(--green)}
+.bd-mid{background:rgba(230,126,34,.1);color:var(--orange)}
+.bd-high{background:rgba(192,57,43,.1);color:var(--red)}
+
+.rc-body{padding:.6rem 1.2rem 1rem;border-top:1px solid var(--border);display:none}
+.rc-body.open{display:block}
+
+.detail-row{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.8rem}
+.d-item{background:var(--cream);border-radius:10px;padding:.6rem .9rem;flex:1;min-width:120px}
+.d-item label{display:block;font-size:.66rem;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.05em;margin-bottom:.15rem}
+.d-item span{font-size:.86rem;font-weight:500;color:var(--ink)}
+
+.domain-chart{margin-bottom:.8rem}
+.dc-title{font-size:.72rem;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+.dc-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.dc-label{font-size:.75rem;color:var(--ink);width:150px;flex-shrink:0}
+.dc-bar-wrap{flex:1;background:var(--border);border-radius:50px;height:7px}
+.dc-bar{height:7px;border-radius:50px}
+.dc-val{font-size:.7rem;font-weight:600;width:34px;text-align:right;flex-shrink:0}
+
+.crit-list{margin-bottom:.8rem}
+.cl-title{font-size:.72rem;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+.cl-item{display:flex;align-items:flex-start;gap:.5rem;
+  font-size:.78rem;color:var(--red);padding:.3rem 0;
+  border-bottom:1px solid rgba(192,57,43,.1)}
+.cl-item:last-child{border:none}
+.cl-item i{margin-top:.1rem;flex-shrink:0}
+
+.rc-actions{display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap}
+.btn-sm{padding:.38rem .85rem;border-radius:50px;border:1.5px solid var(--border);
+  background:transparent;font-size:.76rem;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:.3rem;color:var(--muted)}
+.btn-sm:hover{border-color:var(--bordo);color:var(--bordo)}
+.btn-sm.del:hover{border-color:var(--red);color:var(--red)}
+
+/* EMPTY */
+.empty{text-align:center;padding:4rem 1rem;color:var(--muted)}
+.empty i{font-size:3rem;margin-bottom:1rem;opacity:.25;display:block}
+.empty h3{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--ink);margin-bottom:.5rem}
+.empty a{color:var(--bordo);text-decoration:none;font-weight:500}
+
+footer{background:#0f0a0d;color:rgba(255,255,255,.35);
+  padding:2rem clamp(1rem,5vw,3rem);text-align:center;margin-top:3rem}
+.f-name{font-family:'Playfair Display',serif;font-size:1rem;color:rgba(255,255,255,.7);margin-bottom:.2rem}
+.f-by{font-size:.74rem;margin-top:.4rem}
+.f-by a{color:var(--gold);text-decoration:none}
+
+@media print{
+  .top-nav,.toolbar,.btn-nav,.btn-sm,.rc-actions{display:none!important}
+  .result-card{box-shadow:none;border:1px solid var(--border);page-break-inside:avoid}
+  .rc-body{display:block!important}
+}
+@media(max-width:600px){
+  .rc-top{flex-direction:column}
+  .rc-right{justify-content:space-between;width:100%}
+  .dc-label{width:110px}
+}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="index.html" class="nav-brand">
+    <img src="https://raw.githubusercontent.com/Samir210-az/an-merkezi/main/logo.png"
+         alt="AN" onerror="this.style.display='none'">
+    <span>AN Mərkəzi</span>
+  </a>
+  <div class="nav-right">
+    <a href="index.html" class="btn-nav"><i class="fas fa-plus"></i> Yeni Test</a>
+    <button class="btn-nav" onclick="window.print()"><i class="fas fa-print"></i> Çap</button>
+    <button class="btn-nav danger" onclick="clearAll()"><i class="fas fa-trash"></i> Hamısını Sil</button>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1><i class="fas fa-chart-bar"></i> M-CHAT-R Nəticələr Arxivi</h1>
+  <p>AN Psixoloji Dəstək və Reabilitasiya Mərkəzi</p>
+</div>
+
+<div class="main">
+  <div class="summary-grid" id="summaryGrid"></div>
+  <div class="toolbar">
+    <div class="search-wrap">
+      <i class="fas fa-search"></i>
+      <input class="search-inp" id="searchInp" placeholder="Uşaq adı, mütəxəssis ilə axtar..." oninput="renderList()">
+    </div>
+    <div class="filter-btns">
+      <button class="f-btn active" data-filter="all" onclick="setFilter('all',this)">Hamısı</button>
+      <button class="f-btn low"  data-filter="low"  onclick="setFilter('low',this)">Aşağı risk</button>
+      <button class="f-btn mid"  data-filter="mid"  onclick="setFilter('mid',this)">Orta risk</button>
+      <button class="f-btn high" data-filter="high" onclick="setFilter('high',this)">Yüksək risk</button>
+    </div>
+  </div>
+  <div id="listWrap"></div>
+</div>
+
+<footer>
+  <div class="f-name">AN Psixoloji Dəstək və Reabilitasiya Mərkəzi</div>
+  <p style="font-size:.72rem">Bakı, Nizami r., Rizvan Teymurov 59 · +994 55 415 72 15</p>
+  <div class="f-by">By <a href="https://www.instagram.com/s_akhundoff" target="_blank">@s_akhundoff</a></div>
+</footer>
+
+<script>
+let allData  = [];
+let filter   = 'all';
+
+function load() {
+  allData = JSON.parse(localStorage.getItem('anMchatResults') || '[]');
+}
+
+function setFilter(f, btn) {
+  filter = f;
+  document.querySelectorAll('.f-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderList();
+}
+
+function renderSummary() {
+  const total = allData.length;
+  const low   = allData.filter(function(r){ return r.riskLevel==='low'; }).length;
+  const mid   = allData.filter(function(r){ return r.riskLevel==='mid'; }).length;
+  const high  = allData.filter(function(r){ return r.riskLevel==='high'; }).length;
+  document.getElementById('summaryGrid').innerHTML = `
+    <div class="sum-card"><div class="sum-num">${total}</div><div class="sum-lbl">Ümumi test</div></div>
+    <div class="sum-card"><div class="sum-num" style="color:var(--green)">${low}</div><div class="sum-lbl">Aşağı risk</div></div>
+    <div class="sum-card"><div class="sum-num" style="color:var(--orange)">${mid}</div><div class="sum-lbl">Orta risk</div></div>
+    <div class="sum-card"><div class="sum-num" style="color:var(--red)">${high}</div><div class="sum-lbl">Yüksək risk</div></div>`;
+}
+
+function renderList() {
+  const q     = document.getElementById('searchInp').value.toLowerCase();
+  const items = allData.filter(function(r) {
+    const matchFilter = filter==='all' || r.riskLevel===filter;
+    const matchSearch = !q ||
+      (r.child.name  && r.child.name.toLowerCase().includes(q)) ||
+      (r.child.doctor&& r.child.doctor.toLowerCase().includes(q));
+    return matchFilter && matchSearch;
+  });
+
+  if (items.length===0) {
+    document.getElementById('listWrap').innerHTML = `
+      <div class="empty">
+        <i class="fas fa-inbox"></i>
+        <h3>Nəticə tapılmadı</h3>
+        <p>Hələ heç bir test nəticəsi yoxdur.<br>
+        <a href="index.html"><i class="fas fa-plus"></i> Yeni test keç</a></p>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('listWrap').innerHTML = items.map(function(r, idx) {
+    const lvl   = r.riskLevel;
+    const score = r.score;
+    const child = r.child || {};
+    const initials = (child.name||'?').split(' ').map(function(w){ return w[0]; }).join('').slice(0,2).toUpperCase();
+    const domainHtml = r.domains ? Object.entries(r.domains).map(function(e){
+      const name=e[0], d=e[1];
+      const pct=Math.round(d.risk/d.total*100);
+      const col=pct===0?'var(--green)':pct<=50?'var(--orange)':'var(--red)';
+      return `<div class="dc-row">
+        <div class="dc-label">${name}</div>
+        <div class="dc-bar-wrap"><div class="dc-bar" style="width:${pct}%;background:${col}"></div></div>
+        <div class="dc-val" style="color:${col}">${d.risk}/${d.total}</div>
+      </div>`;
+    }).join('') : '';
+
+    const critHtml = (r.critFails && r.critFails.length>0) ? `
+      <div class="crit-list">
+        <div class="cl-title"><i class="fas fa-star"></i> Uğursuz kritik suallar</div>
+        ${r.critFails.map(function(cf){
+          return '<div class="cl-item"><i class="fas fa-times-circle"></i>S'+cf.id+': '+cf.text+'</div>';
+        }).join('')}
+      </div>` : '';
+
+    const riskLabel = lvl==='low'?'Aşağı Risk':lvl==='mid'?'Orta Risk':'Yüksək Risk';
+    const recText = lvl==='low'
+      ? 'Adi inkişaf monitorinqi davam etsin.'
+      : lvl==='mid'
+      ? 'M-CHAT-R/F Follow-up müsahibəsi aparılsın. 1 ay ərzində yenidən qiymətləndirmə.'
+      : 'Dərhal pediatrik nevroloq / uşaq psixiatrına yönləndirmə tələb olunur.';
+
+    return `
+    <div class="result-card ${lvl}" id="card-${r.id}">
+      <div class="rc-top" onclick="toggleCard('${r.id}')">
+        <div class="rc-child">
+          <div class="rc-avatar av-${lvl}">${initials}</div>
+          <div>
+            <div class="rc-name">${child.name||'Ad qeyd edilməyib'}</div>
+            <div class="rc-meta">
+              ${child.age?child.age+' ay':''} ${child.gender?'· '+child.gender:''} 
+              ${child.doctor?'· <i class="fas fa-user-md"></i> '+child.doctor:''}
+              · <i class="fas fa-calendar"></i> ${r.date||''} ${r.time||''}
+            </div>
+          </div>
+        </div>
+        <div class="rc-right">
+          <div class="rc-score sc-${lvl}">${score}<small style="font-size:.9rem;color:var(--muted)">/20</small></div>
+          <div class="rc-badge bd-${lvl}">${riskLabel}</div>
+          <i class="fas fa-chevron-down" style="color:var(--muted);font-size:.8rem" id="chev-${r.id}"></i>
+        </div>
+      </div>
+      <div class="rc-body" id="body-${r.id}">
+        <div class="detail-row">
+          <div class="d-item"><label>Uşağın adı</label><span>${child.name||'—'}</span></div>
+          <div class="d-item"><label>Yaşı</label><span>${child.age?child.age+' ay':'—'}</span></div>
+          <div class="d-item"><label>Cins</label><span>${child.gender||'—'}</span></div>
+          <div class="d-item"><label>Mütəxəssis</label><span>${child.doctor||'—'}</span></div>
+          <div class="d-item"><label>Risk balı</label><span style="font-weight:700;color:var(--${lvl==='low'?'green':lvl==='mid'?'orange':'red'})">${score}/20 — ${riskLabel}</span></div>
+          <div class="d-item"><label>Kritik uğursuzluq</label><span>${(r.critFails||[]).length} sual</span></div>
+        </div>
+        ${critHtml}
+        <div class="domain-chart">
+          <div class="dc-title"><i class="fas fa-chart-bar"></i> Sahə üzrə analiz</div>
+          ${domainHtml}
+        </div>
+        <div style="background:var(--cream);border-radius:10px;padding:.8rem 1rem;
+          font-size:.82rem;color:var(--ink);border:1px solid var(--border);margin-bottom:.8rem">
+          <strong>Tövsiyə:</strong> ${recText}
+        </div>
+        <div class="rc-actions">
+          <button class="btn-sm" onclick="printCard('${r.id}')"><i class="fas fa-print"></i> Çap et</button>
+          <button class="btn-sm del" onclick="deleteRecord('${r.id}')"><i class="fas fa-trash"></i> Sil</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCard(id) {
+  const body = document.getElementById('body-'+id);
+  const chev = document.getElementById('chev-'+id);
+  const open = body.classList.toggle('open');
+  chev.style.transform = open ? 'rotate(180deg)' : '';
+}
+
+function deleteRecord(id) {
+  if (!confirm('Bu nəticəni silmək istədiyinizdən əminsiniz?')) return;
+  allData = allData.filter(function(r){ return String(r.id)!==String(id); });
+  localStorage.setItem('anMchatResults', JSON.stringify(allData));
+  renderSummary();
+  renderList();
+}
+
+function clearAll() {
+  if (!confirm('Bütün nəticələri silmək istədiyinizdən əminsiniz? Bu əməliyyat geri qaytarıla bilməz!')) return;
+  localStorage.removeItem('anMchatResults');
+  allData = [];
+  renderSummary();
+  renderList();
+}
+
+function printCard(id) {
+  const card = document.getElementById('card-'+id);
+  const body = document.getElementById('body-'+id);
+  body.classList.add('open');
+  window.print();
+}
+
+// İlkin yükləmə
+load();
+renderSummary();
+renderList();
+</script>
+</body>
+</html>
