@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="az">
+<html lang="az" dir="ltr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AN Mərkəzi — M-CHAT-R Autizm Skriniq Testi</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>M-CHAT-R — AN Psixoloji Mərkəzi</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
@@ -12,209 +12,255 @@
   --bordo:#7B1F2E;--bordo2:#9E2D40;--gold:#C9973B;
   --cream:#FAF7F2;--ink:#1A1118;--muted:#6B6070;
   --card:#fff;--border:#E8E2DA;--green:#2E7D52;
-  --red:#C0392B;--orange:#E67E22;--r:14px;
-  --shadow:0 4px 24px rgba(0,0,0,.08);
+  --red:#C0392B;--orange:#E67E22;--r:12px;
+  --shadow:0 2px 16px rgba(0,0,0,.07);
 }
 html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;min-height:100vh}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);
+  line-height:1.6;min-height:100vh;overflow-x:hidden;width:100%}
 
 /* NAV */
 .top-nav{background:rgba(250,247,242,.97);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);padding:0 clamp(1rem,4vw,2.5rem);
-  display:flex;align-items:center;justify-content:space-between;height:62px;
-  position:sticky;top:0;z-index:100}
-.nav-brand{display:flex;align-items:center;gap:.65rem;
-  font-family:'Playfair Display',serif;font-size:1rem;
-  color:var(--bordo);font-weight:700;text-decoration:none}
-.nav-brand img{width:36px;border-radius:9px}
-.nav-right{display:flex;gap:.7rem;align-items:center}
-.btn-nav{padding:.38rem .9rem;border-radius:50px;border:1.5px solid var(--border);
-  background:transparent;font-size:.78rem;color:var(--muted);cursor:pointer;
-  transition:all .2s;text-decoration:none;display:flex;align-items:center;gap:.35rem}
-.btn-nav:hover{border-color:var(--bordo);color:var(--bordo)}
-.btn-nav.primary{background:var(--bordo);color:#fff;border-color:var(--bordo)}
-.btn-nav.primary:hover{background:var(--bordo2)}
+  border-bottom:1px solid var(--border);
+  padding:0 1rem;
+  display:flex;align-items:center;justify-content:space-between;
+  height:58px;position:sticky;top:0;z-index:100;width:100%}
+.nav-brand{display:flex;align-items:center;gap:.5rem;
+  font-family:'Playfair Display',serif;font-size:.9rem;
+  color:var(--bordo);font-weight:700;text-decoration:none;flex-shrink:0;min-width:0}
+.nav-brand img{width:32px;height:32px;border-radius:8px;flex-shrink:0}
+.nav-brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-right{display:flex;gap:.4rem;align-items:center;flex-shrink:0}
+
+/* DİL SEÇİCİ */
+.lang-switcher{display:flex;gap:.2rem;background:var(--cream);
+  border:1.5px solid var(--border);border-radius:50px;padding:.2rem;flex-shrink:0}
+.lang-btn{padding:.22rem .55rem;border-radius:50px;border:none;background:transparent;
+  font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;color:var(--muted)}
+.lang-btn.active{background:var(--bordo);color:#fff}
+
+.btn-results{padding:.35rem .8rem;border-radius:50px;
+  background:var(--bordo);color:#fff;border:none;
+  font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:.3rem;white-space:nowrap;text-decoration:none}
+.btn-results:hover{background:var(--bordo2)}
 
 /* HERO */
 .hero{background:linear-gradient(155deg,#7B1F2E 0%,#5a1522 100%);
-  color:#fff;padding:clamp(2.5rem,7vw,4.5rem) clamp(1rem,5vw,3rem);
-  text-align:center;position:relative;overflow:hidden}
+  color:#fff;padding:2.5rem 1rem;text-align:center;position:relative;overflow:hidden;width:100%}
 .hero::before{content:'';position:absolute;inset:0;
   background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(201,151,59,.22),transparent)}
-.hero-in{position:relative;max-width:700px;margin:0 auto}
+.hero-in{position:relative;max-width:600px;margin:0 auto}
 .hero-badge{display:inline-flex;align-items:center;gap:.5rem;
   background:rgba(201,151,59,.18);border:1px solid rgba(201,151,59,.4);
-  color:#e8c87a;padding:.3rem 1.1rem;border-radius:50px;
-  font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.1rem}
+  color:#e8c87a;padding:.28rem 1rem;border-radius:50px;
+  font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem}
 .hero h1{font-family:'Playfair Display',serif;
-  font-size:clamp(1.7rem,4.5vw,2.8rem);font-weight:700;line-height:1.15;margin-bottom:.7rem}
+  font-size:clamp(1.6rem,6vw,2.6rem);font-weight:700;line-height:1.15;margin-bottom:.5rem}
 .hero h1 em{font-style:italic;color:#e8c87a}
-.hero p{color:rgba(255,255,255,.65);font-size:clamp(.86rem,2vw,.98rem);max-width:560px;margin:0 auto}
-.hero-info{display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:center;
-  margin-top:2rem;padding-top:1.8rem;border-top:1px solid rgba(255,255,255,.13)}
-.hi{display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:rgba(255,255,255,.6)}
-.hi i{color:#e8c87a}
+.hero-sub{color:rgba(255,255,255,.62);font-size:.82rem;margin-bottom:1.2rem;line-height:1.5}
+.hero-sub small{display:block;font-size:.72rem;color:rgba(255,255,255,.45);margin-top:.2rem;font-style:italic}
+.hero-info{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;
+  padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.13)}
+.hi{display:flex;align-items:center;gap:.4rem;font-size:.76rem;color:rgba(255,255,255,.6)}
+.hi i{color:#e8c87a;font-size:.8rem}
 
-/* UŞAQ MƏLUMATı */
-.child-section{background:var(--card);border-bottom:2px solid var(--border);
-  padding:1.8rem clamp(1rem,5vw,3rem)}
-.child-inner{max-width:800px;margin:0 auto}
-.child-title{font-family:'Playfair Display',serif;font-size:1.2rem;
-  color:var(--bordo);margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem}
-.child-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
-.field-wrap{display:flex;flex-direction:column;gap:.35rem}
-.field-wrap label{font-size:.76rem;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
-.field-inp{padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:10px;
-  font-family:'Inter',sans-serif;font-size:.9rem;background:var(--cream);color:var(--ink);
-  transition:border-color .2s}
+/* UŞAQ MƏLUMATI */
+.child-section{background:var(--card);border-bottom:2px solid var(--border);padding:1.4rem 1rem;width:100%}
+.child-inner{max-width:700px;margin:0 auto}
+.child-title{font-family:'Playfair Display',serif;font-size:1.1rem;
+  color:var(--bordo);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.child-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.child-grid .full{grid-column:1/-1}
+.field-wrap{display:flex;flex-direction:column;gap:.3rem}
+.field-wrap label{font-size:.7rem;font-weight:600;color:var(--muted);
+  letter-spacing:.04em;text-transform:uppercase}
+.field-inp{padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:10px;
+  font-family:'Inter',sans-serif;font-size:.88rem;background:var(--cream);
+  color:var(--ink);transition:border-color .2s;width:100%}
 .field-inp:focus{outline:none;border-color:var(--bordo)}
-.child-warning{display:none;background:#fef3cd;border:1px solid #ffc107;
-  border-radius:10px;padding:.6rem 1rem;font-size:.8rem;color:#856404;margin-top:.8rem}
+.child-warn{display:none;background:#fef3cd;border:1px solid #ffc107;
+  border-radius:8px;padding:.55rem .85rem;font-size:.76rem;color:#856404;margin-top:.7rem}
 
-/* TEST BÖLMƏSI */
-.test-section{padding:clamp(1.5rem,5vw,3rem) clamp(1rem,5vw,3rem)}
-.test-inner{max-width:800px;margin:0 auto}
+/* TEST */
+.test-section{padding:1.2rem 1rem;width:100%}
+.test-inner{max-width:700px;margin:0 auto}
 
 /* PROGRESS */
-.progress-bar-wrap{background:var(--border);border-radius:50px;height:8px;margin-bottom:.5rem}
-.progress-bar{height:8px;border-radius:50px;background:linear-gradient(90deg,var(--bordo),var(--gold));
+.progress-wrap{margin-bottom:1.2rem}
+.progress-bar-bg{background:var(--border);border-radius:50px;height:7px;margin-bottom:.4rem}
+.progress-bar{height:7px;border-radius:50px;
+  background:linear-gradient(90deg,var(--bordo),var(--gold));
   transition:width .4s ease;width:0%}
-.progress-text{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted);margin-bottom:1.5rem}
+.progress-info{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted)}
 
 /* SUAL KARTI */
 .q-card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);
-  margin-bottom:1rem;overflow:hidden;border:2px solid transparent;transition:border-color .2s}
-.q-card.answered-yes{border-color:rgba(46,125,82,.3)}
-.q-card.answered-no{border-color:rgba(192,57,43,.2)}
-.q-card.critical{position:relative}
-.q-card.critical::before{content:'★ Kritik sual';position:absolute;top:.6rem;right:.8rem;
-  font-size:.62rem;font-weight:700;color:var(--gold);letter-spacing:.05em;text-transform:uppercase}
+  margin-bottom:.8rem;overflow:hidden;border:2px solid transparent;
+  transition:border-color .2s;width:100%}
+.q-card.ans-yes{border-color:rgba(46,125,82,.35)}
+.q-card.ans-no{border-color:rgba(192,57,43,.25)}
+.q-card.critical{border-left:3px solid var(--gold)}
 
-.q-header{padding:1rem 1.2rem .6rem;display:flex;align-items:flex-start;gap:.8rem}
-.q-num{width:32px;height:32px;border-radius:50%;background:var(--bordo);color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  font-size:.78rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
-.q-num.critical-num{background:var(--gold)}
-.q-text{font-size:.92rem;color:var(--ink);line-height:1.5;flex:1}
-.q-domain{font-size:.68rem;color:var(--muted);margin-top:.3rem;
-  display:flex;align-items:center;gap:.3rem}
+.q-top{padding:.9rem 1rem .5rem;display:flex;align-items:flex-start;gap:.7rem}
+.q-num{width:28px;height:28px;border-radius:50%;background:var(--bordo);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
+.q-num.crit{background:var(--gold)}
+.q-content{flex:1;min-width:0}
+.q-text-az{font-size:.9rem;color:var(--ink);line-height:1.5;margin-bottom:.2rem}
+.q-text-en{font-size:.74rem;color:var(--muted);font-style:italic;line-height:1.4;margin-bottom:.2rem}
+.q-text-ru{font-size:.74rem;color:var(--muted);line-height:1.4;margin-bottom:.3rem}
+.q-tags{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+.q-domain-tag{font-size:.62rem;color:var(--muted);background:var(--cream);
+  padding:.1rem .5rem;border-radius:50px;border:1px solid var(--border)}
+.q-crit-tag{font-size:.62rem;color:var(--gold);font-weight:700}
 
-.q-answers{padding:.5rem 1.2rem 1rem 3.8rem;display:flex;gap:.7rem}
-.ans-btn{flex:1;padding:.65rem;border-radius:10px;border:1.5px solid var(--border);
-  background:var(--cream);font-family:'Inter',sans-serif;font-size:.86rem;
-  font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;
-  justify-content:center;gap:.4rem}
-.ans-btn.yes:hover,.ans-btn.yes.selected{background:rgba(46,125,82,.1);
-  border-color:var(--green);color:var(--green)}
-.ans-btn.no:hover,.ans-btn.no.selected{background:rgba(192,57,43,.08);
-  border-color:var(--red);color:var(--red)}
-.ans-btn.yes.selected{background:rgba(46,125,82,.15);font-weight:600}
-.ans-btn.no.selected{background:rgba(192,57,43,.12);font-weight:600}
+.q-answers{padding:.4rem 1rem .9rem 3.5rem;display:flex;gap:.6rem}
+.ans-btn{flex:1;padding:.58rem .5rem;border-radius:9px;border:1.5px solid var(--border);
+  background:var(--cream);font-family:'Inter',sans-serif;font-size:.82rem;
+  font-weight:500;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:.35rem;
+  white-space:nowrap}
+.ans-btn.yes:hover,.ans-btn.yes.sel{background:rgba(46,125,82,.1);border-color:var(--green);color:var(--green)}
+.ans-btn.no:hover,.ans-btn.no.sel{background:rgba(192,57,43,.08);border-color:var(--red);color:var(--red)}
+.ans-btn.yes.sel{font-weight:600}
+.ans-btn.no.sel{font-weight:600}
 
-/* NƏTİCƏ PANEL */
+/* NƏTİCƏ */
 .result-panel{display:none;background:var(--card);border-radius:var(--r);
-  box-shadow:var(--shadow);margin-top:1.5rem;overflow:hidden}
-.rp-header{padding:1.5rem;text-align:center}
-.risk-badge{display:inline-flex;align-items:center;gap:.6rem;
-  padding:.7rem 1.8rem;border-radius:50px;font-size:1rem;font-weight:700;margin-bottom:1rem}
-.risk-low{background:rgba(46,125,82,.12);color:var(--green);border:2px solid rgba(46,125,82,.3)}
-.risk-mid{background:rgba(230,126,34,.1);color:var(--orange);border:2px solid rgba(230,126,34,.3)}
-.risk-high{background:rgba(192,57,43,.1);color:var(--red);border:2px solid rgba(192,57,43,.3)}
-.risk-score{font-family:'Playfair Display',serif;font-size:3rem;
-  color:var(--bordo);line-height:1;margin-bottom:.3rem}
-.risk-score span{font-size:1.2rem;color:var(--muted)}
-.risk-desc{font-size:.88rem;color:var(--muted);max-width:500px;margin:0 auto .8rem}
+  box-shadow:var(--shadow);margin-top:1.2rem;overflow:hidden;width:100%}
+.rp-head{padding:1.4rem 1rem;text-align:center;border-bottom:1px solid var(--border)}
+.r-score{font-family:'Playfair Display',serif;font-size:3rem;color:var(--bordo);line-height:1}
+.r-score span{font-size:1.1rem;color:var(--muted)}
+.r-badge{display:inline-flex;align-items:center;gap:.5rem;
+  padding:.5rem 1.4rem;border-radius:50px;font-size:.88rem;font-weight:700;margin:.5rem 0}
+.r-low{background:rgba(46,125,82,.1);color:var(--green);border:2px solid rgba(46,125,82,.3)}
+.r-mid{background:rgba(230,126,34,.1);color:var(--orange);border:2px solid rgba(230,126,34,.3)}
+.r-high{background:rgba(192,57,43,.1);color:var(--red);border:2px solid rgba(192,57,43,.3)}
+.r-desc{font-size:.82rem;color:var(--muted);max-width:480px;margin:.4rem auto 0}
 
-.rp-body{padding:0 1.5rem 1.5rem}
-.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;margin-bottom:1.2rem}
-.detail-card{background:var(--cream);border-radius:10px;padding:.9rem;text-align:center;border:1px solid var(--border)}
-.detail-card .dc-num{font-family:'Playfair Display',serif;font-size:1.6rem;line-height:1}
-.detail-card .dc-lbl{font-size:.72rem;color:var(--muted);margin-top:.2rem}
-.dc-num.ok{color:var(--green)}.dc-num.warn{color:var(--orange)}.dc-num.bad{color:var(--red)}
+.rp-body{padding:1rem}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1rem}
+.stat-box{background:var(--cream);border-radius:10px;padding:.8rem;text-align:center;border:1px solid var(--border)}
+.stat-box .sn{font-family:'Playfair Display',serif;font-size:1.5rem;line-height:1}
+.stat-box .sl{font-size:.67rem;color:var(--muted);margin-top:.18rem}
+.sn-ok{color:var(--green)}.sn-warn{color:var(--orange)}.sn-bad{color:var(--red)}
 
-.rec-box{border-radius:12px;padding:1.1rem 1.2rem;margin-bottom:.8rem;
-  display:flex;align-items:flex-start;gap:.8rem;font-size:.86rem}
-.rec-box.low{background:rgba(46,125,82,.07);border:1px solid rgba(46,125,82,.2);color:#1a4a2e}
-.rec-box.mid{background:rgba(230,126,34,.07);border:1px solid rgba(230,126,34,.2);color:#7a4010}
-.rec-box.high{background:rgba(192,57,43,.07);border:1px solid rgba(192,57,43,.2);color:#7a1a10}
-.rec-box i{margin-top:.1rem;flex-shrink:0}
+.section-title{font-size:.72rem;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem;
+  display:flex;align-items:center;gap:.4rem}
 
-.critical-fails{margin-bottom:.8rem}
-.cf-title{font-size:.78rem;font-weight:600;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
-.cf-item{display:flex;align-items:center;gap:.5rem;
-  padding:.4rem .7rem;background:rgba(192,57,43,.06);
-  border-radius:8px;margin-bottom:.3rem;font-size:.8rem;color:var(--red)}
+/* Domain bar */
+.domain-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem}
+.domain-lbl{font-size:.74rem;color:var(--ink);width:130px;flex-shrink:0;line-height:1.3}
+.domain-bar-bg{flex:1;background:var(--border);border-radius:50px;height:7px}
+.domain-bar{height:7px;border-radius:50px;transition:width .6s}
+.domain-val{font-size:.7rem;font-weight:700;width:30px;text-align:right;flex-shrink:0}
 
-.domain-scores{margin-bottom:1.2rem}
-.ds-title{font-size:.78rem;font-weight:600;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem}
-.ds-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.5rem}
-.ds-label{font-size:.8rem;color:var(--ink);width:160px;flex-shrink:0}
-.ds-bar-wrap{flex:1;background:var(--border);border-radius:50px;height:8px}
-.ds-bar{height:8px;border-radius:50px;transition:width .6s ease}
-.ds-val{font-size:.76rem;font-weight:600;width:40px;text-align:right;flex-shrink:0}
+/* Kritik uğursuzluqlar */
+.cf-item{display:flex;align-items:flex-start;gap:.5rem;
+  font-size:.78rem;color:var(--red);padding:.35rem 0;
+  border-bottom:1px solid rgba(192,57,43,.08);line-height:1.4}
+.cf-item:last-child{border:none}
+.cf-item i{flex-shrink:0;margin-top:.15rem}
 
-.action-btns{display:flex;gap:.8rem;flex-wrap:wrap}
-.btn-action{flex:1;min-width:140px;padding:.75rem;border-radius:50px;border:none;
-  font-family:'Inter',sans-serif;font-size:.86rem;font-weight:600;
-  cursor:pointer;transition:all .22s;display:flex;align-items:center;
-  justify-content:center;gap:.45rem}
+/* Tövsiyə */
+.rec-box{border-radius:10px;padding:.9rem 1rem;margin-bottom:.8rem;font-size:.82rem}
+.rec-low{background:rgba(46,125,82,.07);border:1px solid rgba(46,125,82,.2);color:#1a4a2e}
+.rec-mid{background:rgba(230,126,34,.07);border:1px solid rgba(230,126,34,.2);color:#7a4010}
+.rec-high{background:rgba(192,57,43,.07);border:1px solid rgba(192,57,43,.2);color:#7a1010}
+.rec-box strong{display:block;margin-bottom:.3rem}
+
+.disclaimer{font-size:.7rem;color:var(--muted);padding:.6rem .8rem;
+  background:var(--cream);border-radius:8px;border:1px solid var(--border);
+  margin-bottom:.9rem;line-height:1.5}
+
+.action-btns{display:flex;gap:.6rem;flex-wrap:wrap}
+.btn-act{flex:1;min-width:120px;padding:.68rem;border-radius:50px;border:none;
+  font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;
+  justify-content:center;gap:.4rem}
 .btn-primary{background:var(--bordo);color:#fff}
 .btn-primary:hover{background:var(--bordo2);transform:translateY(-1px)}
-.btn-secondary{background:var(--cream);color:var(--ink);border:1.5px solid var(--border)}
-.btn-secondary:hover{border-color:var(--bordo);color:var(--bordo)}
+.btn-sec{background:var(--cream);color:var(--ink);border:1.5px solid var(--border)}
+.btn-sec:hover{border-color:var(--bordo);color:var(--bordo)}
 
 /* SUBMIT BAR */
-.submit-bar{position:sticky;bottom:0;background:rgba(250,247,242,.96);
-  backdrop-filter:blur(12px);border-top:1px solid var(--border);
-  padding:1rem clamp(1rem,5vw,3rem);display:flex;align-items:center;
-  justify-content:space-between;gap:1rem;z-index:50}
-.submit-info{font-size:.82rem;color:var(--muted)}
+.submit-bar{position:sticky;bottom:0;z-index:50;
+  background:rgba(250,247,242,.96);backdrop-filter:blur(12px);
+  border-top:1px solid var(--border);
+  padding:.8rem 1rem;display:flex;align-items:center;
+  justify-content:space-between;gap:.8rem;width:100%}
+.submit-info{font-size:.78rem;color:var(--muted)}
 .submit-info strong{color:var(--bordo)}
-.btn-submit{padding:.75rem 2rem;border-radius:50px;border:none;
+.btn-submit{padding:.7rem 1.5rem;border-radius:50px;border:none;
   background:var(--bordo);color:#fff;font-family:'Inter',sans-serif;
-  font-size:.92rem;font-weight:600;cursor:pointer;transition:all .22s;
-  display:flex;align-items:center;gap:.5rem}
-.btn-submit:hover{background:var(--bordo2);transform:translateY(-1px);
-  box-shadow:0 6px 20px rgba(123,31,46,.3)}
-.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  font-size:.88rem;font-weight:600;cursor:pointer;transition:all .22s;
+  display:flex;align-items:center;gap:.45rem;white-space:nowrap}
+.btn-submit:hover{background:var(--bordo2);box-shadow:0 4px 16px rgba(123,31,46,.3)}
+.btn-submit:disabled{opacity:.45;cursor:not-allowed}
 
 /* FOOTER */
 footer{background:#0f0a0d;color:rgba(255,255,255,.35);
-  padding:2rem clamp(1rem,5vw,3rem);text-align:center}
-.f-name{font-family:'Playfair Display',serif;font-size:1rem;
-  color:rgba(255,255,255,.7);margin-bottom:.25rem}
-.f-sep{border:none;border-top:1px solid rgba(255,255,255,.07);margin:.9rem auto;max-width:260px}
-.f-links{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;justify-content:center}
-.f-links a{color:var(--gold);text-decoration:none;font-size:.76rem}
-.f-by{font-size:.74rem;margin-top:.4rem}
+  padding:1.8rem 1rem;text-align:center;width:100%}
+.f-name{font-family:'Playfair Display',serif;font-size:.95rem;
+  color:rgba(255,255,255,.7);margin-bottom:.2rem}
+.f-sep{border:none;border-top:1px solid rgba(255,255,255,.07);margin:.8rem auto;max-width:240px}
+.f-links{display:flex;flex-wrap:wrap;gap:.4rem 1rem;justify-content:center}
+.f-links a{color:var(--gold);text-decoration:none;font-size:.74rem}
+.f-by{font-size:.72rem;margin-top:.4rem}
+.f-by a{color:var(--gold);text-decoration:none}
 
-/* TOAST */
 .toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);
-  background:#333;color:#fff;padding:.65rem 1.5rem;border-radius:50px;
-  font-size:.84rem;z-index:9999;display:none;white-space:nowrap;
-  box-shadow:0 4px 20px rgba(0,0,0,.25)}
+  background:#222;color:#fff;padding:.6rem 1.4rem;border-radius:50px;
+  font-size:.82rem;z-index:9999;display:none;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,.25);max-width:90vw;text-align:center}
 
-@media(max-width:600px){
-  .q-answers{flex-direction:column;padding-left:1.2rem}
-  .nav-brand span{display:none}
-  .submit-bar{flex-direction:column;text-align:center}
+/* DİL GÖRÜNÜŞLƏRİ */
+.lang-ru .az-only,.lang-en .az-only{display:none}
+.lang-az .ru-only,.lang-en .ru-only{display:none}
+.lang-az .en-only,.lang-ru .en-only{display:none}
+.lang-az .q-text-ru,.lang-az .q-text-en,
+.lang-ru .q-text-az,.lang-ru .q-text-en,
+.lang-en .q-text-az,.lang-en .q-text-ru{display:none}
+
+@media(max-width:480px){
+  .child-grid{grid-template-columns:1fr}
+  .child-grid .full{grid-column:1}
+  .q-answers{padding-left:.9rem}
+  .stat-row{grid-template-columns:1fr 1fr 1fr}
+  .action-btns{flex-direction:column}
+  .btn-act{min-width:unset}
+  .submit-bar{flex-direction:column;gap:.5rem}
   .btn-submit{width:100%;justify-content:center}
+  .domain-lbl{width:100px;font-size:.7rem}
+}
+@media print{
+  .top-nav,.submit-bar,.action-btns,.lang-switcher,.btn-results{display:none!important}
+  .result-panel{display:block!important}
 }
 </style>
 </head>
-<body>
+<body class="lang-az">
 
 <nav class="top-nav">
   <a href="#" class="nav-brand">
     <img src="https://raw.githubusercontent.com/Samir210-az/an-merkezi/main/logo.png"
          alt="AN" onerror="this.style.display='none'">
-    <span>AN Psixoloji Mərkəzi</span>
+    <span>AN Mərkəzi</span>
   </a>
   <div class="nav-right">
-    <a href="results.html" class="btn-nav primary" id="resultsLink" style="display:none">
-      <i class="fas fa-chart-bar"></i> Nəticələr
+    <div class="lang-switcher">
+      <button class="lang-btn active" onclick="setLang('az',this)">AZ</button>
+      <button class="lang-btn" onclick="setLang('ru',this)">RU</button>
+      <button class="lang-btn" onclick="setLang('en',this)">EN</button>
+    </div>
+    <a href="results.html" class="btn-results" id="resultsLink" style="display:none">
+      <i class="fas fa-chart-bar"></i>
+      <span class="az-only">Nəticələr</span>
+      <span class="ru-only">Результаты</span>
+      <span class="en-only">Results</span>
     </a>
   </div>
 </nav>
@@ -222,14 +268,39 @@ footer{background:#0f0a0d;color:rgba(255,255,255,.35);
 <!-- HERO -->
 <header class="hero">
   <div class="hero-in">
-    <div class="hero-badge"><i class="fas fa-clipboard-check"></i> Autizm Skriniq Testi</div>
-    <h1>M-CHAT-R <em>Qiymətləndirmə</em></h1>
-    <p>Modified Checklist for Autism in Toddlers, Revised — 16-30 aylıq uşaqlar üçün standartlaşdırılmış skriniq testi</p>
+    <div class="hero-badge"><i class="fas fa-clipboard-check"></i>
+      <span class="az-only">Autizm Skriniq Testi</span>
+      <span class="ru-only">Тест скрининга аутизма</span>
+      <span class="en-only">Autism Screening Test</span>
+    </div>
+    <h1>
+      <span class="az-only">Autizm Skriniq <em>Testi</em><br><small style="font-size:.55em;color:rgba(255,255,255,.5)">(M-CHAT-R)</small></span>
+      <span class="ru-only">Скрининг Аутизма <em>Тест</em><br><small style="font-size:.55em;color:rgba(255,255,255,.5)">(M-CHAT-R)</small></span>
+      <span class="en-only">Autism Screening <em>Test</em><br><small style="font-size:.55em;color:rgba(255,255,255,.5)">(M-CHAT-R)</small></span>
+    </h1>
+    <div class="hero-sub">
+      <span class="az-only">M-CHAT-R — Autizm üçün Dəyişdirilmiş Yoxlama Siyahısı, Yenilənmiş versiya</span>
+      <span class="ru-only">M-CHAT-R — Модифицированный контрольный список для диагностики аутизма, пересмотренный</span>
+      <span class="en-only">Modified Checklist for Autism in Toddlers, Revised</span>
+      <small>Robins, Fein & Barton, 2009; Robins et al., 2014</small>
+    </div>
     <div class="hero-info">
-      <div class="hi"><i class="fas fa-baby"></i> 16-30 ay arası uşaqlar</div>
-      <div class="hi"><i class="fas fa-question-circle"></i> 20 sual</div>
-      <div class="hi"><i class="fas fa-clock"></i> ~10 dəqiqə</div>
-      <div class="hi"><i class="fas fa-user-md"></i> Mütəxəssis tərəfindən doldurulur</div>
+      <div class="hi"><i class="fas fa-baby"></i>
+        <span class="az-only">16-30 ay arası</span>
+        <span class="ru-only">16-30 месяцев</span>
+        <span class="en-only">16-30 months</span>
+      </div>
+      <div class="hi"><i class="fas fa-list-ol"></i>
+        <span class="az-only">20 sual</span>
+        <span class="ru-only">20 вопросов</span>
+        <span class="en-only">20 questions</span>
+      </div>
+      <div class="hi"><i class="fas fa-clock"></i>~5-10 dəq</div>
+      <div class="hi"><i class="fas fa-user-md"></i>
+        <span class="az-only">Mütəxəssis tərəfindən</span>
+        <span class="ru-only">Заполняется специалистом</span>
+        <span class="en-only">Clinician-administered</span>
+      </div>
     </div>
   </div>
 </header>
@@ -237,35 +308,55 @@ footer{background:#0f0a0d;color:rgba(255,255,255,.35);
 <!-- UŞAQ MƏLUMATI -->
 <div class="child-section">
   <div class="child-inner">
-    <h2 class="child-title"><i class="fas fa-child"></i> Uşaq Məlumatları</h2>
+    <h2 class="child-title"><i class="fas fa-child"></i>
+      <span class="az-only">Uşaq Məlumatları</span>
+      <span class="ru-only">Данные о ребёнке</span>
+      <span class="en-only">Child Information</span>
+    </h2>
     <div class="child-grid">
-      <div class="field-wrap">
-        <label>Uşağın Adı Soyadı *</label>
-        <input class="field-inp" id="childName" type="text" placeholder="Məs: Əli Hüseynov" oninput="updateChild()">
+      <div class="field-wrap full">
+        <label class="az-only">Uşağın Adı Soyadı *</label>
+        <label class="ru-only">Ф.И.О. ребёнка *</label>
+        <label class="en-only">Child's Full Name *</label>
+        <input class="field-inp" id="childName" type="text" oninput="updateChild()">
       </div>
       <div class="field-wrap">
-        <label>Yaşı (ay) *</label>
-        <input class="field-inp" id="childAge" type="number" min="16" max="30" placeholder="Məs: 24" oninput="updateChild()">
+        <label class="az-only">Yaşı (ay) *</label>
+        <label class="ru-only">Возраст (месяцев) *</label>
+        <label class="en-only">Age (months) *</label>
+        <input class="field-inp" id="childAge" type="number" min="16" max="30" oninput="updateChild()">
       </div>
       <div class="field-wrap">
-        <label>Cins</label>
+        <label class="az-only">Cins</label>
+        <label class="ru-only">Пол</label>
+        <label class="en-only">Gender</label>
         <select class="field-inp" id="childGender" onchange="updateChild()">
-          <option value="">Seçin...</option>
-          <option value="oğlan">Oğlan</option>
-          <option value="qız">Qız</option>
+          <option value=""></option>
+          <option value="oğlan" class="az-only">Oğlan</option>
+          <option value="qız" class="az-only">Qız</option>
+          <option value="мальчик" class="ru-only">Мальчик</option>
+          <option value="девочка" class="ru-only">Девочка</option>
+          <option value="boy" class="en-only">Boy</option>
+          <option value="girl" class="en-only">Girl</option>
         </select>
       </div>
       <div class="field-wrap">
-        <label>Müayinə tarixi</label>
+        <label class="az-only">Müayinə Tarixi</label>
+        <label class="ru-only">Дата обследования</label>
+        <label class="en-only">Exam Date</label>
         <input class="field-inp" id="examDate" type="date" oninput="updateChild()">
       </div>
-      <div class="field-wrap" style="grid-column:1/-1">
-        <label>Psixoloq / Mütəxəssis</label>
-        <input class="field-inp" id="doctorName" type="text" placeholder="Mütəxəssisin adı" oninput="updateChild()">
+      <div class="field-wrap full">
+        <label class="az-only">Mütəxəssis / Psixoloq</label>
+        <label class="ru-only">Специалист / Психолог</label>
+        <label class="en-only">Clinician / Psychologist</label>
+        <input class="field-inp" id="doctorName" type="text" oninput="updateChild()">
       </div>
     </div>
-    <div class="child-warning" id="childWarning">
-      ⚠️ Zəhmət olmasa əvvəlcə uşağın adını və yaşını daxil edin
+    <div class="child-warn" id="childWarn">
+      ⚠️ <span class="az-only">Zəhmət olmasa uşağın adını və yaşını daxil edin</span>
+      <span class="ru-only">Пожалуйста, введите имя и возраст ребёнка</span>
+      <span class="en-only">Please enter the child's name and age</span>
     </div>
   </div>
 </div>
@@ -273,322 +364,535 @@ footer{background:#0f0a0d;color:rgba(255,255,255,.35);
 <!-- TEST -->
 <section class="test-section">
   <div class="test-inner">
-    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
-    <div class="progress-text">
-      <span id="progressText">0 / 20 sual cavablandırıldı</span>
-      <span id="progressPct">0%</span>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar" id="pBar"></div></div>
+      <div class="progress-info">
+        <span id="pText">0 / 20</span>
+        <span id="pPct">0%</span>
+      </div>
     </div>
-
-    <div id="questionsWrap"></div>
-
+    <div id="qWrap"></div>
     <div class="result-panel" id="resultPanel"></div>
   </div>
 </section>
 
 <div class="submit-bar">
   <div class="submit-info">
-    Cavablandırıldı: <strong id="answeredCount">0</strong> / 20
+    <span class="az-only">Cavablandırıldı:</span>
+    <span class="ru-only">Отвечено:</span>
+    <span class="en-only">Answered:</span>
+    <strong id="ansCount">0</strong> / 20
   </div>
   <button class="btn-submit" id="submitBtn" onclick="submitTest()" disabled>
-    <i class="fas fa-calculator"></i> Nəticəni Hesabla
+    <i class="fas fa-calculator"></i>
+    <span class="az-only">Nəticəni Hesabla</span>
+    <span class="ru-only">Рассчитать результат</span>
+    <span class="en-only">Calculate Result</span>
   </button>
 </div>
 
 <footer>
   <div class="f-name">AN Psixoloji Dəstək və Reabilitasiya Mərkəzi</div>
-  <p style="font-size:.73rem">Bakı, Nizami r., Rizvan Teymurov 59 · +994 55 415 72 15</p>
+  <p style="font-size:.7rem">Bakı, Nizami r., Rizvan Teymurov 59 · +994 55 415 72 15</p>
   <hr class="f-sep">
   <div class="f-links">
-    <a href="https://www.instagram.com/an_psixologiyamerkezi" target="_blank"><i class="fab fa-instagram"></i> @an_psixologiyamerkezi</a>
+    <a href="https://www.instagram.com/an_psixologiyamerkezi" target="_blank">
+      <i class="fab fa-instagram"></i> @an_psixologiyamerkezi
+    </a>
   </div>
-  <div class="f-by">By <a href="https://www.instagram.com/s_akhundoff" target="_blank" style="color:var(--gold)">@s_akhundoff</a></div>
+  <div class="f-by">By <a href="https://www.instagram.com/s_akhundoff" target="_blank">@s_akhundoff</a></div>
 </footer>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ── M-CHAT-R SUALLAR ────────────────────────────────────────────
-// risk: 'no' = "Xeyr" cavabı risk, 'yes' = "Bəli" cavabı risk
-// critical: true = kritik sual (daha çox əhəmiyyət daşıyır)
-const QUESTIONS = [
-  { id:1,  text:"Uşaq adını çağırdığınız zaman cavab verirmi?", domain:"Sosial cavab", critical:true,  risk:'no' },
-  { id:2,  text:"Uşaq gözləri ilə sizinlə kontakt qururmu?", domain:"Göz kontaktı", critical:true,  risk:'no' },
-  { id:3,  text:"Uşaq heç vaxt bir şeyi işarə etmədən, yalnız baxaraq diqqətinizi cəlb etməyə çalışırmı?", domain:"Birgə diqqət", critical:false, risk:'no' },
-  { id:4,  text:"Uşaq başqalarının hərəkətlərini özbaşına təqlid edirmi? (məs: əl çalmaq, əl yelləmək)", domain:"Təqlid", critical:false, risk:'no' },
-  { id:5,  text:"Uşaq öz adına cavab verirmi (başını çevirmək, gülümsəmək)?", domain:"Sosial cavab", critical:true,  risk:'no' },
-  { id:6,  text:"Uşaq istədiyi bir şeyə barmağı ilə işarə edirmi?", domain:"Kommunikasiya", critical:false, risk:'no' },
-  { id:7,  text:"Uşaq sizinlə paylaşmaq üçün bir şeyi sizə uzadırmı?", domain:"Birgə diqqət", critical:false, risk:'no' },
-  { id:8,  text:"Uşaq oyuncaqlarla uyğun şəkildə oynayırmı? (məs: arabacığı itələmək, kukla ilə oynamaq)", domain:"Oyun", critical:false, risk:'no' },
-  { id:9,  text:"Uşaq bir şeyə işarə etdiyiniz zaman ora baxırmı?", domain:"Birgə diqqət", critical:true,  risk:'no' },
-  { id:10, text:"Uşaq narahat olduqda sakitləşdirilirmi?", domain:"Emosional tənzimləmə", critical:false, risk:'no' },
-  { id:11, text:"Uşaq heç vaxt \"yox\" deirdimi?", domain:"Kommunikasiya", critical:true,  risk:'no' },
-  { id:12, text:"Uşaq yerimə zamanı yardıma ehtiyac duyurmu?", domain:"Motor inkişaf", critical:false, risk:'yes' },
-  { id:13, text:"Uşaq başqa uşaqlarla maraqlanırmı?", domain:"Sosial maraq", critical:true,  risk:'no' },
-  { id:14, text:"Uşaq bir şey istədikdə sizə baxırmı?", domain:"Sosial kommunikasiya", critical:true,  risk:'no' },
-  { id:15, text:"Uşaq sizin hərəkətlərinizi təqlid edirmi?", domain:"Təqlid", critical:true,  risk:'no' },
-  { id:16, text:"Uşaq sizin baxdığınız tərəfə baxırmı?", domain:"Birgə diqqət", critical:false, risk:'no' },
-  { id:17, text:"Uşaq diqqətinizi cəlb etmək üçün sizə yaxınlaşırmı?", domain:"Sosial başlama", critical:false, risk:'no' },
-  { id:18, text:"Uşaq dediyiniz sadə sözləri başa düşürmü? (məs: \"top al\", \"bura gəl\")", domain:"Dil anlayışı", critical:false, risk:'no' },
-  { id:19, text:"Uşaq sizə bir şeyə baxmasını istəmək üçün işarə edirmi? (işarə barmaqlı, \"bax\" deməklə)", domain:"Birgə diqqət", critical:false, risk:'no' },
-  { id:20, text:"Uşaq sizi öz oyununa qatırmı, sizinlə birgə oynamağı xoşlayırmı?", domain:"Sosial oyun", critical:false, risk:'no' },
+// ══════════════════════════════════════════════════════════════
+// RƏSMİ M-CHAT-R SUALLAR (Robins, Fein & Barton, 2009, 2014)
+// risk: cavabın risk olduğu variant ('yes' və ya 'no')
+// critical: kritik sual (2,7,9,10,12,13,14,15)
+// ══════════════════════════════════════════════════════════════
+var QUESTIONS = [
+  {
+    id:1,
+    az:"Uşağı yelləndirdikdə, dizinizdə zıplatdıqda xoşlanırmı?",
+    en:"Does your child enjoy being swung, bounced on your knee, etc.?",
+    ru:"Нравится ли вашему ребёнку, когда его качают, подбрасывают на коленях?",
+    domain_az:"Sosial həzz", domain_en:"Social enjoyment", domain_ru:"Социальное удовольствие",
+    critical:false, risk:'no'
+  },
+  {
+    id:2,
+    az:"Uşaq başqa uşaqlarla maraqlanırmı?",
+    en:"Does your child take an interest in other children?",
+    ru:"Интересуется ли ваш ребёнок другими детьми?",
+    domain_az:"Sosial maraq", domain_en:"Social interest", domain_ru:"Социальный интерес",
+    critical:true, risk:'no'
+  },
+  {
+    id:3,
+    az:"Uşaq dırmaşmağı sevir? (pilləkən, divan, kreslo)",
+    en:"Does your child like climbing on things, such as up stairs?",
+    ru:"Любит ли ваш ребёнок карабкаться на предметы (лестницы, диван)?",
+    domain_az:"Motor aktivlik", domain_en:"Motor activity", domain_ru:"Двигательная активность",
+    critical:false, risk:'no'
+  },
+  {
+    id:4,
+    az:"Uşaq gizlənpaç oynamaqdan zövq alırmı?",
+    en:"Does your child enjoy playing peek-a-boo / hide-and-seek?",
+    ru:"Любит ли ваш ребёнок играть в прятки / «ку-ку»?",
+    domain_az:"Sosial oyun", domain_en:"Social play", domain_ru:"Социальная игра",
+    critical:false, risk:'no'
+  },
+  {
+    id:5,
+    az:"Uşaq heç vaxt nəyisə təqlid edirmi? (məs: telefonla danışmaq, kukla yedirtmək)",
+    en:"Does your child ever pretend, for example, talk on a phone, care for dolls?",
+    ru:"Притворяется ли ваш ребёнок? (напр., говорит по телефону, кормит куклу)",
+    domain_az:"Simvolik oyun", domain_en:"Pretend play", domain_ru:"Символическая игра",
+    critical:false, risk:'no'
+  },
+  {
+    id:6,
+    az:"Uşaq bir şey istədikdə barmağı ilə işarə edirmi?",
+    en:"Does your child ever use his/her index finger to point, to ask for something?",
+    ru:"Использует ли ваш ребёнок указательный палец, чтобы что-то попросить?",
+    domain_az:"Kommunikasiya", domain_en:"Communication", domain_ru:"Коммуникация",
+    critical:false, risk:'no'
+  },
+  {
+    id:7,
+    az:"Uşaq maraqlandığı bir şeyə barmağı ilə işarə edirmi? (\"Bax!\" demək üçün)",
+    en:"Does your child ever use his/her index finger to point out something of interest?",
+    ru:"Указывает ли ваш ребёнок пальцем на что-то интересное (чтобы показать)?",
+    domain_az:"Birgə diqqət", domain_en:"Joint attention", domain_ru:"Совместное внимание",
+    critical:true, risk:'no'
+  },
+  {
+    id:8,
+    az:"Uşaq oyuncaqlarla düzgün oynayırmı? (ağzına almır, düzgün istifadə edir)",
+    en:"Does your child play appropriately with small toys (without mouthing or fiddling)?",
+    ru:"Правильно ли ваш ребёнок играет с маленькими игрушками (не тянет в рот)?",
+    domain_az:"Oyun bacarığı", domain_en:"Play skills", domain_ru:"Игровые навыки",
+    critical:false, risk:'no'
+  },
+  {
+    id:9,
+    az:"Uşaq bir şeyi sizə göstərmək üçün gətirirmi?",
+    en:"Does your child ever bring objects to you (parent/caregiver) to show you?",
+    ru:"Приносит ли ваш ребёнок вам предметы, чтобы показать их?",
+    domain_az:"Birgə diqqət", domain_en:"Joint attention", domain_ru:"Совместное внимание",
+    critical:true, risk:'no'
+  },
+  {
+    id:10,
+    az:"Uşaq 1-2 saniyədən çox göz təması qururmu?",
+    en:"Does your child look you in the eye for more than a second or two?",
+    ru:"Смотрит ли ваш ребёнок вам в глаза дольше 1-2 секунд?",
+    domain_az:"Göz kontaktı", domain_en:"Eye contact", domain_ru:"Зрительный контакт",
+    critical:true, risk:'no'
+  },
+  {
+    id:11,
+    az:"Uşaq səslərə (tozsoran, musiqi) həddən artıq həssaslıq göstərirmi?",
+    en:"Does your child ever seem oversensitive to noise? (e.g., covers ears)",
+    ru:"Проявляет ли ваш ребёнок чрезмерную чувствительность к звукам?",
+    domain_az:"Sensor həssaslıq", domain_en:"Sensory sensitivity", domain_ru:"Сенсорная чувствительность",
+    critical:false, risk:'yes'
+  },
+  {
+    id:12,
+    az:"Uşaq gülümsədiyinizdə cavab olaraq gülümsəyirmi?",
+    en:"Does your child smile in response to your face or smile?",
+    ru:"Улыбается ли ваш ребёнок в ответ на вашу улыбку?",
+    domain_az:"Sosial gülüş", domain_en:"Social smile", domain_ru:"Социальная улыбка",
+    critical:true, risk:'no'
+  },
+  {
+    id:13,
+    az:"Uşaq hərəkətlərinizi təqlid edirmi?",
+    en:"Does your child imitate you? (e.g., wave bye-bye, clap hands)",
+    ru:"Подражает ли ваш ребёнок вашим действиям? (помахать рукой, захлопать)",
+    domain_az:"Təqlid", domain_en:"Imitation", domain_ru:"Подражание",
+    critical:true, risk:'no'
+  },
+  {
+    id:14,
+    az:"Uşaq adını çağırdığınız zaman cavab verirmi?",
+    en:"Does your child respond to his/her name when you call?",
+    ru:"Откликается ли ваш ребёнок, когда вы называете его по имени?",
+    domain_az:"Adına cavab", domain_en:"Name response", domain_ru:"Реакция на имя",
+    critical:true, risk:'no'
+  },
+  {
+    id:15,
+    az:"Otaqda bir oyuncağa işarə etsəniz, uşaq ora baxırmı?",
+    en:"If you point at a toy across the room, does your child look at it?",
+    ru:"Если вы указываете на игрушку в комнате, ваш ребёнок смотрит на неё?",
+    domain_az:"Birgə diqqət", domain_en:"Joint attention", domain_ru:"Совместное внимание",
+    critical:true, risk:'no'
+  },
+  {
+    id:16,
+    az:"Uşaq yeriməyi bacarırmı?",
+    en:"Does your child walk?",
+    ru:"Ходит ли ваш ребёнок самостоятельно?",
+    domain_az:"Motor inkişaf", domain_en:"Motor development", domain_ru:"Моторное развитие",
+    critical:false, risk:'no'
+  },
+  {
+    id:17,
+    az:"Uşaq sizin baxdığınız şeyə baxırmı?",
+    en:"Does your child look at things you are looking at?",
+    ru:"Смотрит ли ваш ребёнок на то, на что смотрите вы?",
+    domain_az:"Birgə diqqət", domain_en:"Joint attention", domain_ru:"Совместное внимание",
+    critical:false, risk:'no'
+  },
+  {
+    id:18,
+    az:"Uşaq üzünüzün yanında qəribə barmaq hərəkətləri edirmi?",
+    en:"Does your child make unusual finger movements near his/her own face?",
+    ru:"Делает ли ваш ребёнок необычные движения пальцами вблизи своего лица?",
+    domain_az:"Stereotip davranış", domain_en:"Stereotyped behavior", domain_ru:"Стереотипное поведение",
+    critical:false, risk:'yes'
+  },
+  {
+    id:19,
+    az:"Uşaq sizin diqqətinizi öz fəaliyyətinə çəkməyə çalışırmı?",
+    en:"Does your child try to attract your attention to his/her own activity?",
+    ru:"Старается ли ваш ребёнок привлечь ваше внимание к своей деятельности?",
+    domain_az:"Sosial başlama", domain_en:"Social initiation", domain_ru:"Социальная инициация",
+    critical:false, risk:'no'
+  },
+  {
+    id:20,
+    az:"Uşağın eşitməsinin zəif olduğunu düşündünüzmü?",
+    en:"Have you ever wondered if your child is deaf?",
+    ru:"Вам когда-либо казалось, что ваш ребёнок может быть глухим?",
+    domain_az:"Eşitmə şübhəsi", domain_en:"Hearing concern", domain_ru:"Подозрение на глухоту",
+    critical:false, risk:'yes'
+  }
 ];
 
-const DOMAIN_COLORS = {
-  "Sosial cavab":"#7B1F2E","Göz kontaktı":"#9E2D40","Birgə diqqət":"#C9973B",
-  "Kommunikasiya":"#2E7D52","Oyun":"#1a6b8a","Emosional tənzimləmə":"#6a4c93",
-  "Motor inkişaf":"#4a6741","Sosial maraq":"#c0392b","Sosial kommunikasiya":"#e67e22",
-  "Təqlid":"#27ae60","Sosial başlama":"#8e44ad","Dil anlayışı":"#2980b9","Sosial oyun":"#c0392b"
-};
+var answers  = {};
+var childData= {};
+var curLang  = 'az';
 
-let answers = {};
-let childData = {};
+// ── DİL ───────────────────────────────────────────────────────
+function setLang(lang, btn) {
+  curLang = lang;
+  document.body.className = 'lang-'+lang;
+  document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  // Select options-u yenilə
+  updateGenderOptions();
+  // Sualları yenidən render et (dil dəyişdi)
+  renderQuestions();
+  // Mövcud cavabları bərpa et
+  Object.keys(answers).forEach(function(qId){ restoreAnswer(parseInt(qId)); });
+}
 
-// ── UŞAQ MƏLUMATı ──────────────────────────────────────────────
+function updateGenderOptions() {
+  var sel = document.getElementById('childGender');
+  var val = sel.value;
+  sel.innerHTML = '<option value=""></option>';
+  var opts = curLang==='az'
+    ? [['oğlan','Oğlan'],['qız','Qız']]
+    : curLang==='ru'
+    ? [['мальчик','Мальчик'],['девочка','Девочка']]
+    : [['boy','Boy'],['girl','Girl']];
+  opts.forEach(function(o){
+    var opt = document.createElement('option');
+    opt.value = o[0]; opt.textContent = o[1];
+    sel.appendChild(opt);
+  });
+}
+
+function t(q, key) {
+  // key: 'text', 'domain'
+  if (key==='text') return q[curLang] || q.az;
+  if (key==='domain') return q['domain_'+curLang] || q.domain_az;
+  return '';
+}
+
+// ── UŞAQ ──────────────────────────────────────────────────────
 function updateChild() {
   childData = {
-    name:    document.getElementById('childName').value.trim(),
-    age:     document.getElementById('childAge').value.trim(),
-    gender:  document.getElementById('childGender').value,
-    date:    document.getElementById('examDate').value,
-    doctor:  document.getElementById('doctorName').value.trim()
+    name:   document.getElementById('childName').value.trim(),
+    age:    document.getElementById('childAge').value.trim(),
+    gender: document.getElementById('childGender').value,
+    date:   document.getElementById('examDate').value,
+    doctor: document.getElementById('doctorName').value.trim()
   };
 }
 
-// ── SUALLARI RENDER ET ──────────────────────────────────────────
+// ── SUALLARI RENDER ───────────────────────────────────────────
 function renderQuestions() {
-  const wrap = document.getElementById('questionsWrap');
-  wrap.innerHTML = QUESTIONS.map(function(q) {
-    return `
-    <div class="q-card ${q.critical?'critical':''}" id="qcard-${q.id}">
-      <div class="q-header">
-        <div class="q-num ${q.critical?'critical-num':''}">${q.id}</div>
-        <div>
-          <div class="q-text">${q.text}</div>
-          <div class="q-domain">
-            <i class="fas fa-tag" style="color:${DOMAIN_COLORS[q.domain]||'#999'}"></i>
-            ${q.domain}${q.critical?' &nbsp;·&nbsp; <span style="color:var(--gold);font-weight:600">★ Kritik</span>':''}
-          </div>
-        </div>
-      </div>
-      <div class="q-answers">
-        <button class="ans-btn yes" onclick="answer(${q.id},'yes')">
-          <i class="fas fa-check"></i> Bəli
-        </button>
-        <button class="ans-btn no" onclick="answer(${q.id},'no')">
-          <i class="fas fa-times"></i> Xeyr
-        </button>
-      </div>
-    </div>`;
+  document.getElementById('qWrap').innerHTML = QUESTIONS.map(function(q){
+    var yesLabel = curLang==='ru'?'Да':curLang==='en'?'Yes':'Bəli';
+    var noLabel  = curLang==='ru'?'Нет':curLang==='en'?'No':'Xeyr';
+    var critTag  = curLang==='ru'?'★ Критический':curLang==='en'?'★ Critical':'★ Kritik';
+    return '<div class="q-card'+(q.critical?' critical':'')+'" id="qc'+q.id+'">'+
+      '<div class="q-top">'+
+        '<div class="q-num'+(q.critical?' crit':'')+'">'+q.id+'</div>'+
+        '<div class="q-content">'+
+          '<div class="q-text-az">'+q.az+'</div>'+
+          '<div class="q-text-en">'+q.en+'</div>'+
+          '<div class="q-text-ru">'+q.ru+'</div>'+
+          '<div class="q-tags">'+
+            '<span class="q-domain-tag">'+t(q,'domain')+'</span>'+
+            (q.critical?'<span class="q-crit-tag">'+critTag+'</span>':'')+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="q-answers">'+
+        '<button class="ans-btn yes" id="yes'+q.id+'" onclick="answer('+q.id+',\'yes\')">'+
+          '<i class="fas fa-check"></i> '+yesLabel+
+        '</button>'+
+        '<button class="ans-btn no" id="no'+q.id+'" onclick="answer('+q.id+',\'no\')">'+
+          '<i class="fas fa-times"></i> '+noLabel+
+        '</button>'+
+      '</div>'+
+    '</div>';
   }).join('');
 }
 
-// ── CAVAB VER ───────────────────────────────────────────────────
+function restoreAnswer(qId) {
+  if (!answers[qId]) return;
+  var card = document.getElementById('qc'+qId);
+  var q    = QUESTIONS.find(function(x){ return x.id===qId; });
+  var val  = answers[qId];
+  card.querySelector('.ans-btn.yes').classList.toggle('sel', val==='yes');
+  card.querySelector('.ans-btn.no').classList.toggle('sel', val==='no');
+  var isRisk = val===q.risk;
+  card.classList.remove('ans-yes','ans-no');
+  card.classList.add(isRisk?'ans-no':'ans-yes');
+}
+
+// ── CAVAB ────────────────────────────────────────────────────
 function answer(qId, val) {
   answers[qId] = val;
-  const card  = document.getElementById('qcard-'+qId);
-  const q     = QUESTIONS.find(function(x){ return x.id===qId; });
-  const isRisk = (val === q.risk);
-
-  // Düymə stilləri
-  card.querySelectorAll('.ans-btn').forEach(function(b){ b.classList.remove('selected'); });
-  card.querySelector('.ans-btn.'+val).classList.add('selected');
-  card.classList.remove('answered-yes','answered-no');
-  card.classList.add(isRisk ? 'answered-no' : 'answered-yes');
-
+  restoreAnswer(qId);
   updateProgress();
 }
 
 function updateProgress() {
-  const total    = QUESTIONS.length;
-  const answered = Object.keys(answers).length;
-  const pct      = Math.round(answered / total * 100);
-
-  document.getElementById('progressBar').style.width  = pct+'%';
-  document.getElementById('progressText').textContent = answered+' / '+total+' sual cavablandırıldı';
-  document.getElementById('progressPct').textContent  = pct+'%';
-  document.getElementById('answeredCount').textContent = answered;
-  document.getElementById('submitBtn').disabled = (answered < total);
+  var n   = Object.keys(answers).length;
+  var pct = Math.round(n/20*100);
+  document.getElementById('pBar').style.width = pct+'%';
+  document.getElementById('pText').textContent= n+' / 20';
+  document.getElementById('pPct').textContent = pct+'%';
+  document.getElementById('ansCount').textContent = n;
+  document.getElementById('submitBtn').disabled = (n < 20);
 }
 
-// ── NƏTİCƏ HESABLA ─────────────────────────────────────────────
+// ── NƏTİCƏ ──────────────────────────────────────────────────
 function submitTest() {
   if (!childData.name || !childData.age) {
-    document.getElementById('childWarning').style.display = 'block';
+    document.getElementById('childWarn').style.display='block';
     document.getElementById('childName').focus();
     window.scrollTo({top:0,behavior:'smooth'});
     return;
   }
+  document.getElementById('childWarn').style.display='none';
 
-  // Risk balı hesabla
-  let totalRisk     = 0;
-  let criticalFails = [];
-  let domainRisk    = {};
-
-  QUESTIONS.forEach(function(q) {
-    const ans    = answers[q.id];
-    const isRisk = (ans === q.risk);
-    if (!domainRisk[q.domain]) domainRisk[q.domain] = {risk:0, total:0};
-    domainRisk[q.domain].total++;
-    if (isRisk) {
-      totalRisk++;
-      domainRisk[q.domain].risk++;
-      if (q.critical) criticalFails.push(q);
-    }
+  // Bal hesabla
+  var totalRisk=0, critFails=[], domainRisk={};
+  QUESTIONS.forEach(function(q){
+    var isRisk = (answers[q.id]===q.risk);
+    var dom    = t(q,'domain');
+    if (!domainRisk[dom]) domainRisk[dom]={risk:0,total:0};
+    domainRisk[dom].total++;
+    if (isRisk){ totalRisk++; domainRisk[dom].risk++; if(q.critical) critFails.push(q); }
   });
 
-  // Risk səviyyəsi
-  let riskLevel, riskLabel, riskClass, riskIcon, riskDesc, riskRec;
-  if (totalRisk <= 2) {
-    riskLevel='low'; riskLabel='Aşağı Risk'; riskClass='risk-low'; riskIcon='fa-check-circle';
-    riskDesc='Uşaqda autizm əlamətləri minimal səviyyədədir. Növbəti skrininq 24-30 ay arası aparılmalıdır.';
-    riskRec='Adi inkişaf monitorinqi davam etsin. Valideynə inkişafı müşahidə etmək tövsiyə olunur.';
-  } else if (totalRisk <= 7) {
-    riskLevel='mid'; riskLabel='Orta Risk'; riskClass='risk-mid'; riskIcon='fa-exclamation-circle';
-    riskDesc='Uşaqda müəyyən autizm əlamətləri mövcuddur. M-CHAT-R/F (izlənmə müsahibəsi) aparılması tövsiyə olunur.';
-    riskRec='M-CHAT-R/F Follow-up müsahibəsi həyata keçirilsin. 1 ay ərzində yenidən qiymətləndirmə aparılsın.';
+  // Risk səviyyəsi (rəsmi M-CHAT-R)
+  var lvl, badge, bClass, desc, rec, ref;
+  if (totalRisk<=2){
+    lvl='low';
+    badge  = curLang==='ru'?'Низкий риск':curLang==='en'?'Low Risk':'Aşağı Risk';
+    bClass ='r-low';
+    desc   = curLang==='ru'?'Признаки аутизма минимальны. Повторный скрининг в 24 месяца.':
+             curLang==='en'?'Low risk for autism. Routine screening at 24 months.':
+             'Autizm əlamətləri minimaldır. 24 ayda növbəti skriniq aparılsın.';
+    rec    = curLang==='ru'?'Продолжить мониторинг развития. Следующий скрининг в 24 месяца.':
+             curLang==='en'?'Continue routine developmental monitoring. Schedule re-screening at 24 months.':
+             'Adi inkişaf monitorinqi davam etdirilsin. 24 ayda yenidən skriniq planlaşdırılsın.';
+    ref    = 'Robins et al. (2014): Score 0-2 → Low Risk';
+  } else if (totalRisk<=7){
+    lvl='mid';
+    badge  = curLang==='ru'?'Средний риск':curLang==='en'?'Medium Risk':'Orta Risk';
+    bClass ='r-mid';
+    desc   = curLang==='ru'?'Выявлены некоторые признаки. Рекомендуется M-CHAT-R/F (наблюдательное интервью).':
+             curLang==='en'?'Some risk indicators present. M-CHAT-R/F Follow-Up Interview recommended.':
+             'Müəyyən risk göstəriciləri var. M-CHAT-R/F İzləmə Müsahibəsi tövsiyə olunur.';
+    rec    = curLang==='ru'?'Провести M-CHAT-R/F Follow-Up интервью. Повторная оценка через 1 месяц.':
+             curLang==='en'?'Administer M-CHAT-R/F Follow-Up Interview. Re-evaluate in 1 month.':
+             'M-CHAT-R/F İzləmə Müsahibəsi keçirilsin. 1 ay ərzində yenidən qiymətləndirmə aparılsın.';
+    ref    = 'Robins et al. (2014): Score 3-7 → Medium Risk → Follow-Up';
   } else {
-    riskLevel='high'; riskLabel='Yüksək Risk'; riskClass='risk-high'; riskIcon='fa-exclamation-triangle';
-    riskDesc='Uşaqda autizm spektr pozuntusuna dair ciddi əlamətlər müşahidə olunur. Dərhal mütəxəssisə yönləndirmə tələb olunur.';
-    riskRec='Pediatrik nevroloq və ya uşaq psixiatrına dərhal yönləndirmə. Ətraflı diaqnostik qiymətləndirmə aparılsın.';
+    lvl='high';
+    badge  = curLang==='ru'?'Высокий риск':curLang==='en'?'High Risk':'Yüksək Risk';
+    bClass ='r-high';
+    desc   = curLang==='ru'?'Серьёзные признаки РАС. Немедленное направление на диагностику.':
+             curLang==='en'?'Significant ASD indicators. Immediate referral for diagnostic evaluation.':
+             'Ciddi ASD əlamətləri. Diaqnostik qiymətləndirmə üçün dərhal yönləndirmə tələb olunur.';
+    rec    = curLang==='ru'?'Немедленно направить к детскому неврологу / психиатру для полной диагностики РАС.':
+             curLang==='en'?'Immediately refer to developmental pediatrician / child psychiatrist for comprehensive ASD evaluation.':
+             'Dərhal uşaq nevroloqu / uşaq psixiatrına yönləndirmə. Ətraflı ASD diaqnostikası aparılsın.';
+    ref    = 'Robins et al. (2014): Score 8-20 → High Risk → Immediate Referral';
   }
 
-  // Kritik sual uğursuzluqları
-  const criticalFailHtml = criticalFails.length > 0 ? `
-    <div class="critical-fails">
-      <div class="cf-title"><i class="fas fa-star"></i> Uğursuz keçilən kritik suallar (${criticalFails.length})</div>
-      ${criticalFails.map(function(q){
-        return '<div class="cf-item"><i class="fas fa-times-circle"></i> S'+q.id+': '+q.text+'</div>';
-      }).join('')}
-    </div>` : '';
-
-  // Domain analizi
-  const domainHtml = Object.entries(domainRisk).map(function(e){
-    const name=e[0], d=e[1];
-    const pct = Math.round(d.risk/d.total*100);
-    const barColor = pct===0?'var(--green)':pct<=50?'var(--orange)':'var(--red)';
-    return `<div class="ds-row">
-      <div class="ds-label">${name}</div>
-      <div class="ds-bar-wrap"><div class="ds-bar" style="width:${pct}%;background:${barColor}"></div></div>
-      <div class="ds-val" style="color:${barColor}">${d.risk}/${d.total}</div>
-    </div>`;
+  // Domain bar HTML
+  var domHtml = Object.entries(domainRisk).map(function(e){
+    var name=e[0], d=e[1];
+    var pct=Math.round(d.risk/d.total*100);
+    var col=pct===0?'var(--green)':pct<=50?'var(--orange)':'var(--red)';
+    return '<div class="domain-row">'+
+      '<div class="domain-lbl">'+name+'</div>'+
+      '<div class="domain-bar-bg"><div class="domain-bar" style="width:'+pct+'%;background:'+col+'"></div></div>'+
+      '<div class="domain-val" style="color:'+col+'">'+d.risk+'/'+d.total+'</div>'+
+    '</div>';
   }).join('');
 
-  const html = `
-    <div class="rp-header">
-      <div class="risk-score">${totalRisk}<span>/20</span></div>
-      <div class="risk-badge ${riskClass}">
-        <i class="fas ${riskIcon}"></i> ${riskLabel}
-      </div>
-      <div class="risk-desc">${riskDesc}</div>
-    </div>
-    <div class="rp-body">
-      <div class="detail-grid">
-        <div class="detail-card">
-          <div class="dc-num ${totalRisk<=2?'ok':totalRisk<=7?'warn':'bad'}">${totalRisk}</div>
-          <div class="dc-lbl">Ümumi risk balı</div>
-        </div>
-        <div class="detail-card">
-          <div class="dc-num ${criticalFails.length===0?'ok':criticalFails.length<=2?'warn':'bad'}">${criticalFails.length}</div>
-          <div class="dc-lbl">Kritik sual uğursuzluğu</div>
-        </div>
-        <div class="detail-card">
-          <div class="dc-num ${20-totalRisk>=18?'ok':20-totalRisk>=13?'warn':'bad'}">${20-totalRisk}</div>
-          <div class="dc-lbl">Uğurlu cavab</div>
-        </div>
-      </div>
+  // Kritik uğursuzluqlar
+  var critHtml = critFails.length>0
+    ? '<div style="margin-bottom:.8rem">'+
+        '<div class="section-title"><i class="fas fa-star" style="color:var(--gold)"></i>'+
+        (curLang==='ru'?'Провальные критические вопросы ('+critFails.length+')':
+         curLang==='en'?'Failed Critical Items ('+critFails.length+')':
+         'Uğursuz Kritik Suallar ('+critFails.length+')')+
+        '</div>'+
+        critFails.map(function(q){
+          return '<div class="cf-item"><i class="fas fa-times-circle"></i>S'+q.id+': '+t(q,'text')+'</div>';
+        }).join('')+
+      '</div>'
+    : '';
 
-      ${criticalFailHtml}
+  // Tövsiyə etiketi
+  var recTitle = curLang==='ru'?'Клиническая рекомендация':
+                 curLang==='en'?'Clinical Recommendation':
+                 'Klinik Tövsiyə';
+  var refTitle = curLang==='ru'?'Научная база':
+                 curLang==='en'?'Evidence Base':
+                 'Elmi Əsas';
+  var domTitle = curLang==='ru'?'Анализ по областям':
+                 curLang==='en'?'Domain Analysis':
+                 'Sahə üzrə Analiz';
+  var saveLabel= curLang==='ru'?'Сохранить и просмотреть':
+                 curLang==='en'?'Save & View Results':
+                 'Yadda Saxla və Bax';
+  var printLbl = curLang==='ru'?'Распечатать':curLang==='en'?'Print':'Çap Et';
+  var resetLbl = curLang==='ru'?'Начать заново':curLang==='en'?'Reset':'Yenidən';
+  var warnTxt  = curLang==='ru'?'⚠️ M-CHAT-R является инструментом скрининга, а не диагностики. Окончательное заключение выносится лицензированным специалистом.':
+                 curLang==='en'?'⚠️ M-CHAT-R is a screening tool, not a diagnostic instrument. Final diagnosis must be made by a licensed clinician.':
+                 '⚠️ M-CHAT-R skriniq alətidir, diaqnoz vasitəsi deyil. Final qərar lisenziyalı mütəxəssis tərəfindən verilməlidir.';
 
-      <div class="domain-scores">
-        <div class="ds-title"><i class="fas fa-chart-bar"></i> Sahə üzrə risk analizi</div>
-        ${domainHtml}
-      </div>
+  var sOk   = 20-totalRisk;
+  var sRisk = totalRisk;
+  var sCrit = critFails.length;
 
-      <div class="rec-box ${riskLevel}">
-        <i class="fas fa-notes-medical"></i>
-        <div><strong>Mütəxəssis tövsiyəsi:</strong><br>${riskRec}</div>
-      </div>
+  var html =
+    '<div class="rp-head">'+
+      '<div class="r-score">'+totalRisk+'<span>/20</span></div>'+
+      '<div class="r-badge '+bClass+'">'+badge+'</div>'+
+      '<div class="r-desc">'+desc+'</div>'+
+    '</div>'+
+    '<div class="rp-body">'+
+      '<div class="stat-row">'+
+        '<div class="stat-box"><div class="sn '+(sRisk===0?'sn-ok':sRisk<=7?'sn-warn':'sn-bad')+'">'+sRisk+'</div>'+
+          '<div class="sl">'+(curLang==='ru'?'Риск-балл':curLang==='en'?'Risk score':'Risk balı')+'</div></div>'+
+        '<div class="stat-box"><div class="sn '+(sCrit===0?'sn-ok':sCrit<=3?'sn-warn':'sn-bad')+'">'+sCrit+'</div>'+
+          '<div class="sl">'+(curLang==='ru'?'Крит. ошибки':curLang==='en'?'Critical fails':'Kritik uğursuzluq')+'</div></div>'+
+        '<div class="stat-box"><div class="sn sn-ok">'+sOk+'</div>'+
+          '<div class="sl">'+(curLang==='ru'?'Успешно':curLang==='en'?'Passed':'Uğurlu cavab')+'</div></div>'+
+      '</div>'+
+      critHtml+
+      '<div style="margin-bottom:.8rem">'+
+        '<div class="section-title"><i class="fas fa-chart-bar"></i>'+domTitle+'</div>'+
+        domHtml+
+      '</div>'+
+      '<div class="rec-box rec-'+lvl+'">'+
+        '<strong>'+recTitle+':</strong>'+rec+
+      '</div>'+
+      '<div class="disclaimer" style="font-size:.68rem;margin-bottom:.5rem">'+
+        '<i class="fas fa-book-open"></i> '+refTitle+': '+ref+
+      '</div>'+
+      '<div class="disclaimer">'+warnTxt+'</div>'+
+      '<div class="action-btns">'+
+        '<button class="btn-act btn-primary" onclick="saveAndView()">'+
+          '<i class="fas fa-save"></i> '+saveLabel+
+        '</button>'+
+        '<button class="btn-act btn-sec" onclick="window.print()">'+
+          '<i class="fas fa-print"></i> '+printLbl+
+        '</button>'+
+        '<button class="btn-act btn-sec" onclick="resetTest()">'+
+          '<i class="fas fa-redo"></i> '+resetLbl+
+        '</button>'+
+      '</div>'+
+    '</div>';
 
-      <div style="font-size:.72rem;color:var(--muted);margin-bottom:1rem;padding:.6rem;
-        background:var(--cream);border-radius:8px;border:1px solid var(--border)">
-        ⚠️ M-CHAT-R skriniq alətidir, diaqnoz vasitəsi deyil. Final qərar lisenziyalı mütəxəssis tərəfindən verilməlidir.
-      </div>
-
-      <div class="action-btns">
-        <button class="btn-action btn-primary" onclick="saveAndView()">
-          <i class="fas fa-save"></i> Yadda Saxla və Nəticəyə Bax
-        </button>
-        <button class="btn-action btn-secondary" onclick="printResult()">
-          <i class="fas fa-print"></i> Çap Et
-        </button>
-        <button class="btn-action btn-secondary" onclick="resetTest()">
-          <i class="fas fa-redo"></i> Yenidən Başla
-        </button>
-      </div>
-    </div>`;
-
-  const panel = document.getElementById('resultPanel');
+  var panel = document.getElementById('resultPanel');
   panel.innerHTML = html;
   panel.style.display = 'block';
   panel.scrollIntoView({behavior:'smooth', block:'start'});
 
-  // Nəticəni localStorage-a saxla (results.html oxuyacaq)
-  saveToStorage(totalRisk, riskLevel, riskLabel, criticalFails, domainRisk);
+  // Saxla
+  saveRecord(totalRisk, lvl, badge, critFails, domainRisk, desc, rec);
 }
 
-// ── SAXLA ───────────────────────────────────────────────────────
-function saveToStorage(score, level, label, critFails, domains) {
-  const record = {
-    id:          Date.now(),
-    child:       childData,
-    score:       score,
-    riskLevel:   level,
-    riskLabel:   label,
-    critFails:   critFails.map(function(q){ return {id:q.id, text:q.text}; }),
-    domains:     domains,
-    answers:     answers,
-    date:        new Date().toLocaleDateString('az-AZ'),
-    time:        new Date().toLocaleTimeString('az-AZ')
+function saveRecord(score, lvl, badge, critFails, domains, desc, rec) {
+  var record = {
+    id:        Date.now(),
+    lang:      curLang,
+    child:     childData,
+    score:     score,
+    riskLevel: lvl,
+    riskLabel: badge,
+    critFails: critFails.map(function(q){ return {id:q.id, text:t(q,'text')}; }),
+    domains:   domains,
+    desc:      desc,
+    rec:       rec,
+    answers:   answers,
+    date:      new Date().toLocaleDateString('az-AZ'),
+    time:      new Date().toLocaleTimeString('az-AZ')
   };
-  const all = JSON.parse(localStorage.getItem('anMchatResults') || '[]');
+  var all = JSON.parse(localStorage.getItem('anMchatResults')||'[]');
   all.unshift(record);
   localStorage.setItem('anMchatResults', JSON.stringify(all));
-  document.getElementById('resultsLink').style.display = 'flex';
+  document.getElementById('resultsLink').style.display='flex';
 }
 
 function saveAndView() {
-  showToast('Nəticə yadda saxlandı ✓');
+  showToast(curLang==='ru'?'Сохранено ✓':curLang==='en'?'Saved ✓':'Yadda saxlandı ✓');
   setTimeout(function(){ window.location.href='results.html'; }, 800);
 }
 
-function printResult() { window.print(); }
-
 function resetTest() {
-  if (!confirm('Testi sıfırlamaq istədiyinizdən əminsiniz?')) return;
+  var msg = curLang==='ru'?'Начать заново? Все ответы будут сброшены.':
+            curLang==='en'?'Reset test? All answers will be cleared.':
+            'Testi sıfırlamaq istəyirsiniz?';
+  if (!confirm(msg)) return;
   answers = {};
-  document.getElementById('resultPanel').style.display = 'none';
+  document.getElementById('resultPanel').style.display='none';
   renderQuestions();
   updateProgress();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  setTimeout(function(){ t.style.display='none'; }, 2500);
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.style.display='block';
+  setTimeout(function(){ t.style.display='none'; },2500);
 }
 
-// ── İLKİN YÜKLƏMƏ ──────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
-  // Tarix avtomatik bu günün tarixi
-  document.getElementById('examDate').value = new Date().toISOString().split('T')[0];
+// İlkin yükləmə
+document.addEventListener('DOMContentLoaded', function(){
+  document.getElementById('examDate').value=new Date().toISOString().split('T')[0];
   updateChild();
   renderQuestions();
-  // Results linki göstər əgər nəticə var
-  if (localStorage.getItem('anMchatResults')) {
-    document.getElementById('resultsLink').style.display = 'flex';
-  }
+  if (localStorage.getItem('anMchatResults'))
+    document.getElementById('resultsLink').style.display='flex';
 });
 </script>
 </body>
