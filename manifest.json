@@ -1,0 +1,43 @@
+{
+  "name": "AN Psixoloji Mərkəzi — M-CHAT-R",
+  "short_name": "M-CHAT-R",
+  "description": "AN Psixoloji Dəstək və Reabilitasiya Mərkəzi — Autizm Skriniq Testi",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FAF7F2",
+  "theme_color": "#7B1F2E",
+  "orientation": "portrait",
+  "lang": "az",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/Samir210-az/an-merkezi/main/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/Samir210-az/an-merkezi/main/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Yeni Test",
+      "short_name": "Test",
+      "description": "M-CHAT-R testi keç",
+      "url": "/",
+      "icons": [{"src": "https://raw.githubusercontent.com/Samir210-az/an-merkezi/main/icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Nəticələr",
+      "short_name": "Arxiv",
+      "description": "Keçirilmiş testlərə bax",
+      "url": "/results.html",
+      "icons": [{"src": "https://raw.githubusercontent.com/Samir210-az/an-merkezi/main/icon-192.png", "sizes": "192x192"}]
+    }
+  ],
+  "categories": ["medical", "health", "education"]
+}
