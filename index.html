@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#7B1F2E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="M-CHAT-R">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Samir210-az/an-merkezi/main/icon-192.png">
 <title>M-CHAT-R — AN Psixoloji Mərkəzi</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -933,6 +940,12 @@ document.addEventListener('DOMContentLoaded',function(){
   updateChild(); renderQuestions();
   if(localStorage.getItem('anMchatResults'))
     document.getElementById('resultsLink').style.display='flex';
+  // PWA Service Worker
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js')
+      .then(function(r){ console.log('SW qeydiyyatdan keçdi:', r.scope); })
+      .catch(function(e){ console.log('SW xətası:', e); });
+  }
 });
 </script>
 </body>
