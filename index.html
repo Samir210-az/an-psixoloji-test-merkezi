@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AN Psixoloji Dəstək və Reabilitasiya Mərkəzi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --mint:    #D6EDE4;
+      --sage:    #7BAE96;
+      --deep:    #1E3D30;
+      --sand:    #F5F0E8;
+      --warm:    #C8886A;
+      --ink:     #1A1A1A;
+      --muted:   #6B7B72;
+      --white:   #FFFFFF;
+      --radius:  12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--sand);
+      color: var(--ink);
+      line-height: 1.65;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(245, 240, 232, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(123,174,150,0.25);
+      padding: 0 clamp(1rem, 5vw, 3rem);
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px;
+    }
+    .nav-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem; font-weight: 600;
+      color: var(--deep); text-decoration: none;
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .nav-brand span.badge {
+      background: var(--sage); color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .7rem; font-weight: 500;
+      padding: 2px 9px; border-radius: 20px; letter-spacing: .04em;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: .88rem; font-weight: 400; color: var(--muted);
+      text-decoration: none; transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--deep); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 92vh;
+      display: grid; place-items: center;
+      padding: clamp(3rem, 10vw, 7rem) clamp(1rem, 5vw, 3rem);
+      background:
+        radial-gradient(ellipse 60% 55% at 80% 20%, rgba(214,237,228,.7) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 50% at 15% 80%, rgba(200,136,106,.12) 0%, transparent 60%),
+        var(--sand);
+      text-align: center;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .78rem; font-weight: 500; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--sage);
+      margin-bottom: 1.4rem;
+    }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 6vw, 4.6rem);
+      font-weight: 600; line-height: 1.12;
+      color: var(--deep); max-width: 780px; margin: 0 auto .8rem;
+    }
+    .hero h1 em { font-style: italic; color: var(--sage); }
+    .hero-sub {
+      font-size: clamp(.95rem, 2vw, 1.12rem);
+      color: var(--muted); max-width: 560px;
+      margin: 0 auto 2.4rem;
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .75rem 2rem; border-radius: 50px; border: none;
+      font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 500;
+      cursor: pointer; text-decoration: none; transition: all .25s;
+    }
+    .btn-primary { background: var(--deep); color: #fff; }
+    .btn-primary:hover { background: var(--sage); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30,61,48,.18); }
+    .btn-outline { background: transparent; color: var(--deep); border: 1.5px solid var(--sage); }
+    .btn-outline:hover { background: var(--mint); }
+
+    .hero-stats {
+      display: flex; flex-wrap: wrap; gap: 2.5rem; justify-content: center;
+      margin-top: 4rem; padding-top: 2.5rem;
+      border-top: 1px solid rgba(123,174,150,.3);
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem; font-weight: 600; color: var(--deep); line-height: 1;
+    }
+    .stat-label { font-size: .8rem; color: var(--muted); margin-top: .3rem; }
+
+    /* ── SECTION WRAPPER ── */
+    .section { padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 5vw, 3rem); }
+    .section-inner { max-width: 1160px; margin: 0 auto; }
+    .section-tag {
+      font-size: .75rem; font-weight: 500; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--warm);
+      margin-bottom: .8rem; display: block;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 600; color: var(--deep); line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .section-lead { color: var(--muted); font-size: 1.05rem; max-width: 600px; margin-bottom: 3rem; }
+
+    /* ── TESTS GRID ── */
+    .tests-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    .test-card {
+      background: var(--white); border-radius: var(--radius);
+      overflow: hidden; box-shadow: 0 2px 12px rgba(30,61,48,.06);
+      transition: transform .3s, box-shadow .3s;
+      display: flex; flex-direction: column;
+    }
+    .test-card:hover { transform: translateY(-5px); box-shadow: 0 12px 36px rgba(30,61,48,.12); }
+    .card-stripe { height: 5px; }
+    .stripe-green  { background: linear-gradient(90deg, var(--sage), var(--mint)); }
+    .stripe-warm   { background: linear-gradient(90deg, var(--warm), #e8b899); }
+    .stripe-teal   { background: linear-gradient(90deg, #5a9e8b, #97cebe); }
+
+    .card-body { padding: 1.6rem; flex: 1; }
+    .card-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 1rem;
+    }
+    .icon-green { background: var(--mint); }
+    .icon-warm  { background: #fce8de; }
+    .icon-teal  { background: #d4eee8; }
+
+    .card-body h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem; font-weight: 600;
+      color: var(--deep); margin-bottom: .4rem;
+    }
+    .card-body p { font-size: .88rem; color: var(--muted); margin-bottom: 1rem; }
+
+    .card-criteria { list-style: none; margin-bottom: 1.2rem; }
+    .card-criteria li {
+      font-size: .82rem; color: var(--ink);
+      padding: .35rem 0; border-bottom: 1px solid #f0ede6;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .card-criteria li::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--sage); flex-shrink: 0;
+    }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; }
+    .eval-table {
+      width: 100%; border-collapse: collapse;
+      font-size: .84rem;
+    }
+    .eval-table th {
+      background: var(--deep); color: #fff;
+      padding: .7rem 1rem; text-align: left;
+      font-weight: 500; font-size: .78rem; letter-spacing: .04em;
+    }
+    .eval-table th:first-child { border-radius: var(--radius) 0 0 0; }
+    .eval-table th:last-child  { border-radius: 0 var(--radius) 0 0; }
+    .eval-table td {
+      padding: .65rem 1rem; border-bottom: 1px solid #eee;
+      color: var(--ink);
+    }
+    .eval-table tr:hover td { background: var(--mint); }
+    .check { color: var(--sage); font-weight: 700; }
+    .cross { color: #c0392b; font-weight: 700; }
+
+    /* ── PRINCIPLES ── */
+    .principles { background: var(--deep); }
+    .principles .section-title { color: #fff; }
+    .principles .section-lead  { color: rgba(255,255,255,.55); }
+    .principles .section-tag   { color: var(--mint); }
+
+    .principles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.2rem;
+    }
+    .principle-item {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.2rem;
+      transition: background .2s;
+    }
+    .principle-item:hover { background: rgba(255,255,255,.1); }
+    .principle-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 600;
+      color: var(--sage); line-height: 1;
+      margin-bottom: .6rem;
+    }
+    .principle-item h4 {
+      font-size: .92rem; font-weight: 500;
+      color: #fff; margin-bottom: .3rem;
+    }
+    .principle-item p { font-size: .8rem; color: rgba(255,255,255,.5); }
+
+    /* ── TIPS ── */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.2rem;
+    }
+    .tip-card {
+      background: var(--white); border-radius: var(--radius);
+      padding: 1.4rem; border-left: 4px solid var(--sage);
+      box-shadow: 0 2px 10px rgba(30,61,48,.05);
+      transition: border-color .2s;
+    }
+    .tip-card:hover { border-color: var(--warm); }
+    .tip-card h4 {
+      font-size: .95rem; font-weight: 500;
+      color: var(--deep); margin-bottom: .4rem;
+    }
+    .tip-card p { font-size: .83rem; color: var(--muted); }
+
+    /* ── ETHICS ── */
+    .ethics { background: var(--mint); }
+    .ethics-list {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+    }
+    .ethics-item {
+      background: var(--white); border-radius: 50px;
+      padding: .6rem 1.4rem;
+      font-size: .88rem; color: var(--deep); font-weight: 500;
+      display: flex; align-items: center; gap: .5rem;
+      box-shadow: 0 1px 6px rgba(30,61,48,.07);
+    }
+    .ethics-item::before {
+      content: '✓'; color: var(--sage); font-weight: 700;
+    }
+
+    /* ── CONTACT CTA ── */
+    .cta {
+      background: linear-gradient(135deg, var(--deep) 0%, #2e5f4a 100%);
+      text-align: center;
+    }
+    .cta .section-title { color: #fff; }
+    .cta p { color: rgba(255,255,255,.65); font-size: 1rem; margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .cta .btn-primary { background: var(--warm); }
+    .cta .btn-primary:hover { background: #d4926f; }
+    .cta .btn-outline { border-color: rgba(255,255,255,.4); color: #fff; }
+    .cta .btn-outline:hover { background: rgba(255,255,255,.1); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #111; color: rgba(255,255,255,.45);
+      padding: 2.5rem clamp(1rem, 5vw, 3rem);
+      text-align: center; font-size: .82rem;
+    }
+    footer a { color: var(--sage); text-decoration: none; }
+    footer a:hover { color: var(--mint); }
+    .footer-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; color: rgba(255,255,255,.75);
+      margin-bottom: .3rem;
+    }
+    .footer-divider { margin: 1.2rem 0; border: none; border-top: 1px solid rgba(255,255,255,.1); }
+    .footer-credits { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; justify-content: center; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero h1 { font-size: 2.2rem; }
+    }
+
+    /* ── SCROLL FADE ── */
+    .fade-in {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    /* ── INTERACTIVE TABLE INPUTS ── */
+    .input-check {
+      width: 20px; height: 20px; cursor: pointer; accent-color: var(--sage);
+    }
+    .note-input {
+      width: 100%; border: 1px solid #e5e0d8; border-radius: 6px;
+      padding: .3rem .5rem; font-size: .8rem; color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      background: var(--sand); resize: none;
+    }
+    .note-input:focus { outline: none; border-color: var(--sage); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav aria-label="Əsas naviqasiya">
+  <a href="#" class="nav-brand">
+    AN Mərkəzi
+    <span class="badge">Psixoloji Dəstək</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#testler">Testlər</a></li>
+    <li><a href="#prinsiplər">Prinsiplər</a></li>
+    <li><a href="#tövsiyələr">Tövsiyələr</a></li>
+    <li><a href="#etika">Etika</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div>
+    <span class="hero-eyebrow">AN Psixoloji Dəstək və Reabilitasiya Mərkəzi</span>
+    <h1>Xüsusi Qayğıya Ehtiyacı Olan Uşaqlar üçün <em>Qiymətləndirmə Sistemi</em></h1>
+    <p class="hero-sub">
+      Hər uşaq unikaldır. Mütəxəssislərimiz uşağınızın potensialını üzə çıxarmaq üçün elm əsaslı, mehriban yanaşma ilə dəstək verir.
+    </p>
+    <div class="hero-actions">
+      <a href="#testler" class="btn btn-primary">Testlərə Bax →</a>
+      <a href="#etika" class="btn btn-outline">Etika Standartları</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Test Sahəsi</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">6</div>
+        <div class="stat-label">Emosiya Qrupu</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Könüllülük Əsası</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- TESTS -->
+<section class="section" id="testler">
+  <div class="section-inner">
+    <span class="section-tag">Qiymətləndirmə Alətləri</span>
+    <h2 class="section-title">Test Nümunələri</h2>
+    <p class="section-lead">Üç əsas sahədə uşağın inkişaf səviyyəsini qiymətləndirmək üçün hazırlanmış test toplusu.</p>
+
+    <div class="tests-grid">
+
+      <!-- CARD 1: Sosial-Emosional -->
+      <article class="test-card fade-in">
+        <div class="card-stripe stripe-green"></div>
+        <div class="card-body">
+          <div class="card-icon icon-green">🧠</div>
+          <h3>Sosial-Emosional İnkişaf</h3>
+          <p>Uşağın emosiyaları tanıma, başa düşmə və ifadə etmə bacarığını ölçür.</p>
+          <ul class="card-criteria">
+            <li>Emosiyaları düzgün adlandırma</li>
+            <li>Emosiya ifadəsini başa düşmə</li>
+            <li>Öz emosiyasını ifadə etmə</li>
+          </ul>
+          <div class="table-wrap">
+            <table class="eval-table">
+              <thead>
+                <tr>
+                  <th>Emosiya</th>
+                  <th>Tanındı</th>
+                  <th>Qeyd</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>😊 Sevinc</td>  <td><input type="checkbox" class="input-check"></td><td><input class="note-input" placeholder="Şərh..."></td></tr>
+                <tr><td>😢 Kədər</td>   <td><input type="checkbox" class="input-check"></td><td><input class="note-input" placeholder="Şərh..."></td></tr>
+                <tr><td>😨 Qorxu</td>   <td><input type="checkbox" class="input-check"></td><td><input class="note-input" placeholder="Şərh..."></td></tr>
+                <tr><td>😮 Təəccüb</td> <td><input type="checkbox" class="input-check"></td><td><input class="note-input" placeholder="Şərh..."></td></tr>
+                <tr><td>😠 Qəzəb</td>   <td><input type="checkbox" class="input-check"></td><td><input class="note-input" placeholder="Şərh..."></td></tr>
+                <tr><td>😌 Sakit hal</td><td><input type="checkbox" class="input-check"></td><td><input class="note-input" placeholder="Şərh..."></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 2: Koqnitiv -->
+      <article class="test-card fade-in">
+        <div class="card-stripe stripe-warm"></div>
+        <div class="card-body">
+          <div class="card-icon icon-warm">💡</div>
+          <h3>Koqnitiv İnkişaf</h3>
+          <p>Məntiqi düşünmə, problem həlletmə və ardıcıllıq qurma bacarıqlarını ölçür.</p>
+          <ul class="card-criteria">
+            <li>Tapşırığı başa düşmə səviyyəsi</li>
+            <li>Həll yolunu seçmə bacarığı</li>
+            <li>Nəticəni izah etmə</li>
+          </ul>
+          <div class="table-wrap">
+            <table class="eval-table">
+              <thead>
+                <tr>
+                  <th>Tapşırıq</th>
+                  <th>Həll</th>
+                  <th>Vaxt</th>
+                  <th>Qeyd</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Fiqur Uyğunlaşdırma</td>
+                  <td><input type="checkbox" class="input-check"></td>
+                  <td><input class="note-input" placeholder="dəq" style="width:50px"></td>
+                  <td><input class="note-input" placeholder="Şərh..."></td>
+                </tr>
+                <tr>
+                  <td>Ardıcıllıq Tamamlama</td>
+                  <td><input type="checkbox" class="input-check"></td>
+                  <td><input class="note-input" placeholder="dəq" style="width:50px"></td>
+                  <td><input class="note-input" placeholder="Şərh..."></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 3: Motor -->
+      <article class="test-card fade-in">
+        <div class="card-stripe stripe-teal"></div>
+        <div class="card-body">
+          <div class="card-icon icon-teal">🏃</div>
+          <h3>Motor Bacarıqlar</h3>
+          <p>İri və kiçik motor bacarıqlarını, hərəkət koordinasiyasını müəyyənləşdirir.</p>
+          <ul class="card-criteria">
+            <li>Hərəkətlərin dəqiqliyi</li>
+            <li>Koordinasiya səviyyəsi</li>
+            <li>Əşyalarla manipulyasiya bacarığı</li>
+          </ul>
+          <div class="table-wrap">
+            <table class="eval-table">
+              <thead>
+                <tr>
+                  <th>Bacarıq</th>
+                  <th>İcra</th>
+                  <th>Tövsiyə</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Düz xətt boyunca yerimə</td><td><input type="checkbox" class="input-check"></td><td><input class="note-input" placeholder="Məsləhət..."></td></tr>
+                <tr><td>Top atma və tutma</td>       <td><input type="checkbox" class="input-check"></td><td><input class="note-input" placeholder="Məsləhət..."></td></tr>
+                <tr><td>Bir ayaq üzərində dayanma</td><td><input type="checkbox" class="input-check"></td><td><input class="note-input" placeholder="Məsləhət..."></td></tr>
+                <tr><td>Kubikləri yığma</td>         <td><input type="checkbox" class="input-check"></td><td><input class="note-input" placeholder="Məsləhət..."></td></tr>
+                <tr><td>Puzzle həll etmə</td>        <td><input type="checkbox" class="input-check"></td><td><input class="note-input" placeholder="Məsləhət..."></td></tr>
+                <tr><td>Qələmlə şəkil çəkmə</td>    <td><input type="checkbox" class="input-check"></td><td><input class="note-input" placeholder="Məsləhət..."></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- PRINCIPLES -->
+<section class="section principles" id="prinsiplər">
+  <div class="section-inner">
+    <span class="section-tag">Əsas Yanaşma</span>
+    <h2 class="section-title">Ümumi Qeydlər</h2>
+    <p class="section-lead">Hər test seansı bu prinsiplərə əsaslanır.</p>
+    <div class="principles-grid">
+      <div class="principle-item fade-in">
+        <div class="principle-num">01</div>
+        <h4>Yaşa Uyğunluq</h4>
+        <p>Hər tapşırıq uşağın yaş səviyyəsinə uyğunlaşdırılmalıdır.</p>
+      </div>
+      <div class="principle-item fade-in">
+        <div class="principle-num">02</div>
+        <h4>Səbir və Mehribanlıq</h4>
+        <p>Psixoloq bütün seans boyu səbir və mehribanlıqla yanaşmalıdır.</p>
+      </div>
+      <div class="principle-item fade-in">
+        <div class="principle-num">03</div>
+        <h4>Həvəsləndirmə</h4>
+        <p>Uşağı hər addımda həvəsləndirmək vacibdir.</p>
+      </div>
+      <div class="principle-item fade-in">
+        <div class="principle-num">04</div>
+        <h4>Zorla İcra Yoxdur</h4>
+        <p>Heç bir tapşırıq zorla yerinə yetirilməməlidir.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIPS -->
+<section class="section" id="tövsiyələr">
+  <div class="section-inner">
+    <span class="section-tag">Mütəxəssis Məsləhəti</span>
+    <h2 class="section-title">Test Keçirmə Tövsiyələri</h2>
+    <p class="section-lead">Effektiv qiymətləndirmə üçün praktik istiqamətlər.</p>
+    <div class="tips-grid">
+      <div class="tip-card fade-in">
+        <h4>🏠 Rahat Mühit</h4>
+        <p>Uşağın rahat hiss edəcəyi sakit, işıqlı və tanış bir məkan seçin. Diqqəti dağıdan elementlər minimuma endirilsin.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <h4>⏱ Vaxt Ayırın</h4>
+        <p>Tələsməyin. Uşağın hər tapşırıqla tanış olması üçün kifayət qədər vaxt verin.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <h4>💙 Səbirli Olun</h4>
+        <p>Cavabın gec gəlməsi normaldır. Sualı yenidən, sadə dillə izah edin.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <h4>⭐ Motivasiya</h4>
+        <p>Hər uğurlu addımı mükafatlandırın — hətta kiçik cəhdi belə alqışlayın.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <h4>🔄 Geriyə Dönüş</h4>
+        <p>Test bitdikdən sonra valideynlərə / müəllimlərə konstruktiv, dürüst geriyə dönüş verin.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETHICS -->
+<section class="section ethics" id="etika">
+  <div class="section-inner">
+    <span class="section-tag">Peşə Standartları</span>
+    <h2 class="section-title">Etik Standartlar</h2>
+    <p class="section-lead" style="color:var(--deep)">AN Mərkəzi olaraq biz hər uşağa münasibətdə bu dəyərləri qoruyuruq.</p>
+    <div class="ethics-list">
+      <div class="ethics-item">Uşağın şəxsiyyətinə hörmət</div>
+      <div class="ethics-item">Konfidensialluğun qorunması</div>
+      <div class="ethics-item">Tam könüllülük prinsipi</div>
+      <div class="ethics-item">Heç bir təzyiq olmamalıdır</div>
+      <div class="ethics-item">Valideyn razılığı</div>
+      <div class="ethics-item">Nəticələrin gizli saxlanması</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section cta">
+  <div class="section-inner" style="text-align:center">
+    <span class="section-tag" style="color:var(--mint)">Bizimlə Əlaqə</span>
+    <h2 class="section-title">Uşağınız üçün Dəstək Alın</h2>
+    <p>AN Psixoloji Dəstək və Reabilitasiya Mərkəzi olaraq hər uşağa fərdi yanaşma ilə dəstək veririk.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="https://www.instagram.com/s_akhundoff" target="_blank" class="btn btn-primary">Instagram-da Bizi Tap</a>
+      <a href="#testler" class="btn btn-outline">Testlərə Bax</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">AN Psixoloji Dəstək və Reabilitasiya Mərkəzi</div>
+  <p>Xüsusi Qayğıya Ehtiyacı Olan Uşaqlar üçün Qiymətləndirmə Platforması</p>
+  <hr class="footer-divider" />
+  <div class="footer-credits">
+    <span>© 2025 AN Mərkəzi. Bütün hüquqlar qorunur.</span>
+    <span>By <strong style="color:var(--sage)">s_akhundoff</strong></span>
+    <a href="https://www.instagram.com/s_akhundoff" target="_blank">📸 Instagram</a>
+  </div>
+</footer>
+
+<script>
+  // Scroll fade-in
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
