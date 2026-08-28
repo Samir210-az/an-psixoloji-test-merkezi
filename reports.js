@@ -263,6 +263,7 @@ window.openReportView = function(reportOrId, subjectNameArg){
   const title = report.reportType==='parent' ? 'Valideyn arayışı' : 'Mütəxəssis iş qiymətləndirməsi';
   const body = document.getElementById('reportViewBody');
   body.innerHTML = `
+    <div class="print-letterhead">AN Psixoloji Dəstək və Reabilitasiya Mərkəzi</div>
     <div class="ai-report-head">
       <div>
         <h4>${esc(title)} — ${esc(subjectName)}</h4>
@@ -271,7 +272,8 @@ window.openReportView = function(reportOrId, subjectNameArg){
       <span class="ai-badge">✨ AI köməkliyi ilə hazırlanıb</span>
     </div>
     <div class="ai-report">${esc(report.content)}</div>
-    <p class="field hint" style="margin-top:1rem">Bu mətn AI köməkliyi ilə hazırlanıb və mütəxəssis tərəfindən paylaşılmazdan əvvəl nəzərdən keçirilməlidir.</p>`;
+    <p class="field hint" style="margin-top:1rem">Bu mətn AI köməkliyi ilə hazırlanıb və mütəxəssis tərəfindən paylaşılmazdan əvvəl nəzərdən keçirilməlidir.</p>
+    <div class="print-signature">Direktor: Nahidə Axundova</div>`;
   openModal('modalReportView');
 }
 window.copyReportContent = function(){
