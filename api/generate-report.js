@@ -63,7 +63,8 @@ ${NO_MARKDOWN_RULE}
 Yalnız sənə verilən məlumata əsaslan. Uydurma fakt, rəqəm, diaqnoz və ya nəticə əlavə etmə. Məlumat azdırsa, bunu açıq şəkildə bildir, boşluğu təxminlə doldurma.
 Heç bir tibbi və ya psixoloji diaqnoz qoyma — yalnız müşahidə olunan davranışı və inkişafı təsvir et.
 Mətn geniş və izahlı olsun, səthi keçmə — hər müşahidəni valideynin aydın başa düşəcəyi şəkildə bir qədər açıqla və nümunələrlə dəstəklə.
-Mətni təbii axarla qur: əvvəlcə dövr ərzində uşağın necə iştirak etdiyini, sonra hansı sahələrdə irəliləyiş müşahidə olunduğunu, sonra hazırda hansı sahələrin diqqət tələb etdiyini, sonda isə evdə valideynin dəstək ola biləcəyi konkret və təhlükəsiz təcrübi tövsiyələri yaz.
+Mətni təbii axarla qur: əvvəlcə dövr ərzində uşağın necə iştirak etdiyini, sonra hansı sahələrdə irəliləyiş müşahidə olunduğunu, sonra hazırda hansı sahələrin diqqət tələb etdiyini yaz.
+Sonda mütləq bir həftəlik "Evdə məşğələ planı" bölməsi yaz — bu bölmə uşağın müşahidə olunan hazırkı ehtiyaclarına uyğun, təhlükəsiz və valideynin evdə asanlıqla tətbiq edə biləcəyi fəaliyyətlərdən ibarət olsun. Planı Bazar ertəsindən Bazar gününə qədər hər gün üçün ayrıca, qısa və konkret fəaliyyətlə yaz (məsələn "Bazar ertəsi:" deyə günü adlandır, sonra o gün üçün 1-2 qısa fəaliyyəti təsvir et), günlər arasında məşğul olunan bacarıq növünü dəyişdirərək müxtəliflik yarat, hər fəaliyyət 10-15 dəqiqədən çox olmasın və oyun formatında olsun.
 Ton isti, dəstəkləyici və hörmətli olsun, lakin həqiqətə sadiq qal — süni tərif və mübaliğədən çəkin.`;
 
   const user = `Pasient: ${clip(p.name)}${p.age ? ', ' + clip(p.age) + ' yaş' : ''}
@@ -76,7 +77,7 @@ ${outcomesText}
 Bu dövrün seans qeydləri:
 ${sessionsText}
 
-Yuxarıdakı məlumat əsasında valideynə təqdim ediləcək geniş və güclü arayışı hazırla.`;
+Yuxarıdakı məlumat əsasında valideynə təqdim ediləcək geniş və güclü arayışı, sonunda bir həftəlik evdə məşğələ planı ilə birlikdə, hazırla.`;
 
   return { system, user };
 }
@@ -150,7 +151,7 @@ async function callGroq(apiKey, system, user, signal) {
     body: JSON.stringify({
       model: MODEL,
       temperature: 0.4,
-      max_completion_tokens: 1600,
+      max_completion_tokens: 2000,
       messages: [
         { role: 'system', content: system },
         { role: 'user', content: user }
