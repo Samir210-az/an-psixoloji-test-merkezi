@@ -374,6 +374,10 @@ a{color:inherit;text-decoration:none}
       <div class="field"><label>Telefon</label><input id="stPhone" placeholder="+994 XX XXX XX XX"></div>
     </div>
     <div class="field"><label>Vəzifə / İxtisas</label><input id="stRole" placeholder="Məs. Uşaq psixoloqu, ABA terapevti"></div>
+    <div class="field" style="display:flex;align-items:center;gap:8px">
+      <input type="checkbox" id="stConductsSessions" style="width:auto" checked>
+      <label style="margin:0;text-transform:none;font-size:.85rem;font-weight:600;letter-spacing:0">Seans keçirir (ana səhifədə "bugünkü seans" kartında görünsün)</label>
+    </div>
     <div class="field"><label>Qeydlər</label><textarea id="stNotes" placeholder="Əlavə qeydlər..."></textarea></div>
     <div class="grid2 admin-only">
       <div class="field"><label>İcazə səviyyəsi</label><select id="stAccessLevel"><option value="staff">Mütəxəssis (adi)</option><option value="admin">Admin</option></select></div>
@@ -691,6 +695,7 @@ function renderDashboardStaffCards(){
   const staffFilter = myStaffId();
   let entries = Object.entries(window.DB.staff||{});
   if(staffFilter) entries = entries.filter(([id])=>id===staffFilter);
+  entries = entries.filter(([id,s]) => s.conductsSessions !== false);
   entries = entries.sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
   if(!entries.length){ container.innerHTML = `<div class="empty"><div class="ic">🧑‍⚕️</div><p>Hələ mütəxəssis yoxdur.</p></div>`; return; }
   const counts = {};
@@ -758,8 +763,10 @@ window.openStaffModal = function(id){
     const s = window.DB.staff[id];
     stName.value=s.name||''; stPhone.value=s.phone||''; stRole.value=s.role||''; stNotes.value=s.notes||'';
     stAccessLevel.value = s.accessLevel||'staff'; stPin.value = s.pin||'';
+    stConductsSessions.checked = s.conductsSessions !== false;
   } else {
     stName.value=stPhone.value=stRole.value=stNotes.value=stPin.value=''; stAccessLevel.value='staff';
+    stConductsSessions.checked = true;
   }
   openModal('modalStaff');
 }
@@ -772,6 +779,7 @@ window.saveStaff = function(){
     name, phone: stPhone.value.trim(), role: stRole.value.trim(), notes: stNotes.value.trim(),
     accessLevel: isAdmin() ? stAccessLevel.value : (existing?.accessLevel||'staff'),
     pin: isAdmin() ? stPin.value.trim() : (existing?.pin||''),
+    conductsSessions: stConductsSessions.checked,
     createdAt: existing?.createdAt || Date.now()
   };
   if(id){ window.__fbUpdateStaff(id, val); toast('Mütəxəssis yeniləndi ✓'); }
