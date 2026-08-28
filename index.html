@@ -6,6 +6,12 @@
 <title>Terapiya Jurnalı | AN Psixoloji Dəstək və Reabilitasiya Mərkəzi</title>
 <meta name="description" content="AN Psixoloji Dəstək və Reabilitasiya Mərkəzi üçün seans qeydiyyatı, həftəlik nəticələr və AI köməkliyi ilə hazırlanan arayışlar.">
 <meta name="theme-color" content="#0B3D3F">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Terapiya Jurnalı">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -528,7 +534,7 @@ window.__fbRemoveReport = (id) => wrapWrite(remove(ref(fbDb, `terapiya/aiReports
 
 <script>
 /* ============ LOGIN / ROLES ============ */
-const MASTER_ADMIN_PIN = "1987"; // klinika-sistemi ilə eyni admin kodu
+const MASTER_ADMIN_PIN = "2026"; // admin master kodu
 window.currentUser = null;
 
 window.refreshLoginOptions = function(){
@@ -954,5 +960,10 @@ window.closeModal = function(id){ document.getElementById(id).classList.remove('
 
 <!-- AI Arayışlar məntiqi ayrı fayldan yüklənir -->
 <script src="reports.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js').catch(()=>{}));
+}
+</script>
 </body>
 </html>

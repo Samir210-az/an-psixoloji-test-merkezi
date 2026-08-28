@@ -20,7 +20,7 @@ API açarları yalnız server tərəfdə istifadə olunur, heç vaxt brauzerə g
 
 ## Giriş
 
-Admin master PIN klinika-sistemi ilə eynidir (`1987`). Mütəxəssislər öz PIN kodları ilə daxil olur (Mütəxəssislər bölməsində admin tərəfindən təyin edilir).
+Admin master PIN: `2026` (klinika-sistemi-dən fərqlidir — orada hələ `1987` qalır). Mütəxəssislər öz PIN kodları ilə daxil olur (Mütəxəssislər bölməsində admin tərəfindən təyin edilir).
 
 ## Rol icazələri
 
