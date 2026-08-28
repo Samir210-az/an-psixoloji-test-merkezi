@@ -11,10 +11,12 @@ Bu layihə statik HTML + bir ədəd serverless funksiyadan (`api/generate-report
 1. [vercel.com](https://vercel.com) → **Add New → Project** → bu GitHub repo-nu seç (`an-psixoloji-test-merkezi`).
 2. Framework: **Other** (statik sayt, build əmri yoxdur).
 3. **Environment Variables** bölməsinə əlavə et:
-   - `GROQ_API_KEY` — Groq Console-dan (console.groq.com) alınan API açarı.
+   - `GROQ_API_KEY` — 1-ci Groq açarı (console.groq.com/keys).
+   - `GROQ_API_KEY_2` — 2-ci Groq açarı.
+   - (istəyə görə `GROQ_API_KEY_3`, `GROQ_API_KEY_4` ... əlavə edilə bilər)
 4. Deploy et.
 
-API açarı yalnız server tərəfdə (`process.env.GROQ_API_KEY`) istifadə olunur, heç vaxt brauzerə göndərilmir.
+API açarları yalnız server tərəfdə istifadə olunur, heç vaxt brauzerə göndərilmir. Açarlardan biri limitə çatıb 429 qaytarsa, funksiya avtomatik növbəti açarla yenidən cəhd edir.
 
 ## Giriş
 

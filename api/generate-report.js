@@ -96,14 +96,48 @@ Yuxarıdakı məlumat əsasında mütəxəssisin bu həftəki işi barədə hesa
   return { system, user };
 }
 
+// Bir neçə Groq açarı arasında rotasiya: GROQ_API_KEY, GROQ_API_KEY_2, GROQ_API_KEY_3 ...
+// Açarlardan biri limitə çatıb 429 qaytarsa, növbəti açarla avtomatik yenidən cəhd edilir.
+function loadApiKeys() {
+  const keys = [];
+  if (process.env.GROQ_API_KEY) keys.push(process.env.GROQ_API_KEY);
+  let i = 2;
+  while (process.env['GROQ_API_KEY_' + i]) {
+    keys.push(process.env['GROQ_API_KEY_' + i]);
+    i++;
+  }
+  return keys;
+}
+
+async function callGroq(apiKey, system, user, signal) {
+  const res = await fetch(GROQ_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      temperature: 0.4,
+      max_completion_tokens: 900,
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: user }
+      ]
+    }),
+    signal
+  });
+  return res;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Yalnız POST metodu dəstəklənir' });
     return;
   }
 
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
+  const apiKeys = loadApiKeys();
+  if (!apiKeys.length) {
     res.status(500).json({ error: 'Server konfiqurasiyası tamamlanmayıb (GROQ_API_KEY yoxdur)' });
     return;
   }
@@ -124,42 +158,31 @@ export default async function handler(req, res) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 25000);
 
+  let lastStatus = null, lastErrText = '';
   try {
-    const groqRes = await fetch(GROQ_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        temperature: 0.4,
-        max_completion_tokens: 900,
-        messages: [
-          { role: 'system', content: system },
-          { role: 'user', content: user }
-        ]
-      }),
-      signal: controller.signal
-    });
+    for (let i = 0; i < apiKeys.length; i++) {
+      const groqRes = await callGroq(apiKeys[i], system, user, controller.signal);
+
+      if (groqRes.ok) {
+        clearTimeout(timeout);
+        const data = await groqRes.json();
+        const content = data?.choices?.[0]?.message?.content?.trim();
+        if (!content) { res.status(502).json({ error: 'AI boş cavab qaytardı' }); return; }
+        res.status(200).json({ content, model: MODEL });
+        return;
+      }
+
+      lastStatus = groqRes.status;
+      lastErrText = await groqRes.text().catch(() => '');
+      console.error('Groq açarı #' + (i + 1) + ' xətası:', lastStatus, lastErrText);
+
+      // Limit/kvota xətasıdırsa (429) və ya açar etibarsızdırsa (401/403), növbəti açarla cəhd et.
+      const shouldRotate = lastStatus === 429 || lastStatus === 401 || lastStatus === 403;
+      if (!shouldRotate || i === apiKeys.length - 1) break;
+    }
 
     clearTimeout(timeout);
-
-    if (!groqRes.ok) {
-      const errText = await groqRes.text().catch(() => '');
-      console.error('Groq API xətası:', groqRes.status, errText);
-      res.status(502).json({ error: 'AI xidmətindən cavab alınmadı (status ' + groqRes.status + ')' });
-      return;
-    }
-
-    const data = await groqRes.json();
-    const content = data?.choices?.[0]?.message?.content?.trim();
-    if (!content) {
-      res.status(502).json({ error: 'AI boş cavab qaytardı' });
-      return;
-    }
-
-    res.status(200).json({ content, model: MODEL });
+    res.status(502).json({ error: 'AI xidmətindən cavab alınmadı (status ' + lastStatus + ')' });
   } catch (err) {
     clearTimeout(timeout);
     console.error('generate-report xətası:', err);
