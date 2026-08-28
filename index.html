@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Terapiya Jurnalı | AN Psixoloji Dəstək və Reabilitasiya Mərkəzi</title>
+<meta name="description" content="AN Psixoloji Dəstək və Reabilitasiya Mərkəzi üçün seans qeydiyyatı, həftəlik nəticələr və AI köməkliyi ilə hazırlanan arayışlar.">
+<meta name="theme-color" content="#0B3D3F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal-deep:#0B3D3F; --teal:#155E63; --teal-light:#2A8C8F;
+  --lavender:#8E7CC3; --lavender-light:#B5A7DE;
+  --amber:#E8A33D; --amber-light:#F2C572;
+  --cream:#F7F4EE; --cream-card:#FFFFFF;
+  --ink:#1B2622; --ink-soft:#5B6864; --border:#E4DFD3;
+  --danger:#D96C5A; --success:#4C9A7A;
+  --radius:20px; --radius-sm:12px;
+  --shadow:0 8px 30px rgba(11,61,63,.08); --shadow-lg:0 20px 60px rgba(11,61,63,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Manrope',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.font-display{font-family:'Fraunces',serif}
+.mono{font-family:'JetBrains Mono',monospace}
+button{font-family:inherit;cursor:pointer;border:none;outline:none;background:none}
+input,select,textarea{font-family:inherit;outline:none}
+a{color:inherit;text-decoration:none}
+
+.bg-breath{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.35;animation:drift 22s ease-in-out infinite}
+.blob1{width:480px;height:480px;background:var(--teal-light);top:-140px;left:-120px}
+.blob2{width:420px;height:420px;background:var(--lavender);bottom:-160px;right:-100px;animation-delay:-7s}
+.blob3{width:340px;height:340px;background:var(--amber-light);top:40%;left:60%;animation-delay:-14s}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(40px,-30px) scale(1.08)}66%{transform:translate(-30px,30px) scale(.95)}}
+@media(prefers-reduced-motion:reduce){.blob{animation:none}}
+
+#splashScreen{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,var(--teal-deep) 0%,var(--teal) 55%,var(--teal-light) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;transition:opacity .6s ease,visibility .6s ease;overflow:hidden}
+#splashScreen::before,#splashScreen::after{content:'';position:absolute;border-radius:50%;filter:blur(60px);opacity:.35}
+#splashScreen::before{width:340px;height:340px;background:var(--amber);top:-80px;left:-60px;animation:drift 18s ease-in-out infinite}
+#splashScreen::after{width:300px;height:300px;background:var(--lavender);bottom:-90px;right:-60px;animation:drift 18s ease-in-out infinite reverse}
+.splash-tj{font-family:'Fraunces',serif;font-size:5rem;font-weight:700;letter-spacing:.05em;background:linear-gradient(120deg,#fff 0%,var(--amber-light) 25%,#fff 50%,var(--lavender-light) 75%,#fff 100%);background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:splashIn .7s ease both,shimmer 2.6s linear infinite;position:relative;z-index:1}
+.splash-sub{color:rgba(255,255,255,.85);font-weight:600;font-size:.9rem;letter-spacing:.03em;opacity:0;animation:splashSubIn .7s ease .5s both;position:relative;z-index:1}
+.splash-ring{width:96px;height:96px;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:#fff;position:absolute;bottom:14%;animation:spin 1s linear infinite}
+@keyframes splashIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+@keyframes splashSubIn{from{opacity:0;transform:translateY(8px)}to{opacity:.85;transform:translateY(0)}}
+@keyframes shimmer{to{background-position:-220% center}}
+@keyframes spin{to{transform:rotate(360deg)}}
+#splashScreen.hide{opacity:0;visibility:hidden}
+@media(prefers-reduced-motion:reduce){.splash-tj{animation:none}.splash-ring{animation:none}}
+
+#lockScreen{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;background:var(--cream)}
+.lock-card{background:var(--cream-card);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem 2rem;width:min(380px,90vw);text-align:center;box-shadow:var(--shadow-lg);animation:riseIn .5s ease}
+@keyframes riseIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.lock-icon{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--lavender));display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:700;color:#fff;margin:0 auto 1.2rem;box-shadow:0 8px 24px rgba(21,94,99,.3);animation:pulseRing 2.4s ease-in-out infinite;font-family:'Fraunces',serif}
+@keyframes pulseRing{0%,100%{box-shadow:0 0 0 0 rgba(21,94,99,.25)}50%{box-shadow:0 0 0 14px rgba(21,94,99,0)}}
+.lock-card h1{font-size:1.5rem;font-weight:700;color:var(--teal-deep);margin-bottom:.4rem}
+.lock-card p{color:var(--ink);opacity:.85;font-weight:600;font-size:.86rem;margin-bottom:1.4rem;line-height:1.4}
+#lockInput{width:100%;padding:14px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:1.4rem;text-align:center;letter-spacing:6px;margin-bottom:1rem;transition:.2s}
+#lockInput:focus{border-color:var(--teal-light);box-shadow:0 0 0 4px rgba(42,140,143,.12)}
+.lock-err{color:var(--danger);font-size:.8rem;height:1.1rem;margin-bottom:.6rem}
+
+#app{display:none}
+.shell{display:flex;min-height:100vh}
+.sidebar{width:250px;flex-shrink:0;background:rgba(255,255,255,.6);backdrop-filter:blur(20px);border-right:1px solid var(--border);padding:1.6rem 1.2rem;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:2rem;padding:0 .3rem}
+.brand-icon{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,var(--teal),var(--lavender));display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 6px 16px rgba(21,94,99,.25);font-family:'Fraunces',serif}
+.brand-text h1{font-size:1.1rem;line-height:1.2;font-weight:700;color:var(--teal-deep);letter-spacing:.01em}
+.brand-text p{font-size:.74rem;color:var(--ink);opacity:.8;font-weight:600;line-height:1.35;margin-top:2px}
+
+.nav{display:flex;flex-direction:column;gap:3px;flex:1;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--radius-sm);font-size:.85rem;font-weight:600;color:var(--ink-soft);transition:.2s}
+.nav-item .ic{font-size:1.02rem;width:22px;text-align:center}
+.nav-item:hover{background:rgba(21,94,99,.06);color:var(--ink)}
+.nav-item.active{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;box-shadow:0 6px 18px rgba(21,94,99,.28)}
+
+.sidebar-footer{padding-top:1rem;border-top:1px solid var(--border);margin-top:1rem}
+.credit{font-size:.68rem;color:var(--ink-soft);text-align:center;line-height:1.6}
+.credit a{color:var(--teal-light);font-weight:600}
+.who{font-size:.72rem;color:var(--ink-soft);text-align:center;margin-bottom:.5rem;font-weight:600}
+
+.main{flex:1;padding:2rem 2.4rem 3rem;max-width:1200px}
+.topbar{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;margin-bottom:1.8rem}
+.topbar h2{font-size:1.7rem;font-weight:600}
+.topbar .sub{color:var(--ink-soft);font-size:.85rem;margin-top:2px}
+
+.view{display:none;animation:fadeUp .4s ease}
+.view.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.8rem}
+.stat-card{background:var(--cream-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.3rem 1.4rem;box-shadow:var(--shadow);transition:.25s}
+.stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.stat-card .n{font-family:'Fraunces',serif;font-size:2.1rem;font-weight:600;line-height:1}
+.stat-card .l{font-size:.78rem;color:var(--ink-soft);margin-top:6px;font-weight:600}
+.stat-card.teal{background:linear-gradient(135deg,var(--teal),var(--teal-light));border-color:transparent;box-shadow:0 8px 20px rgba(21,94,99,.28)}
+.stat-card.lavender{background:linear-gradient(135deg,var(--lavender),var(--lavender-light));border-color:transparent;box-shadow:0 8px 20px rgba(142,124,195,.3)}
+.stat-card.amber{background:linear-gradient(135deg,var(--amber),var(--amber-light));border-color:transparent;box-shadow:0 8px 20px rgba(232,163,61,.32)}
+.stat-card.danger{background:linear-gradient(135deg,var(--danger),#E8917F);border-color:transparent;box-shadow:0 8px 20px rgba(217,108,90,.32)}
+.stat-card.teal .n,.stat-card.lavender .n,.stat-card.amber .n,.stat-card.danger .n{color:#fff}
+.stat-card.teal .l,.stat-card.lavender .l,.stat-card.amber .l,.stat-card.danger .l{color:rgba(255,255,255,.85)}
+
+.panel{background:var(--cream-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);margin-bottom:1.4rem}
+.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.1rem;gap:10px;flex-wrap:wrap}
+.panel-head h3{font-size:1.05rem;font-weight:700}
+
+.btn{padding:11px 18px;border-radius:12px;font-size:.85rem;font-weight:700;display:inline-flex;align-items:center;gap:7px;transition:.2s}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;box-shadow:0 6px 16px rgba(21,94,99,.28)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(21,94,99,.34)}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.btn-lav{background:linear-gradient(135deg,var(--lavender),var(--lavender-light));color:#fff;box-shadow:0 6px 16px rgba(142,124,195,.3)}
+.btn-lav:hover{transform:translateY(-2px)}
+.btn-amber{background:linear-gradient(135deg,var(--amber),var(--amber-light));color:#5c3b06;box-shadow:0 6px 16px rgba(232,163,61,.32)}
+.btn-amber:hover{transform:translateY(-2px)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--ink)}
+.btn-outline:hover{border-color:var(--teal-light);color:var(--teal)}
+.btn-danger{background:transparent;color:var(--danger);border:1.5px solid rgba(217,108,90,.35)}
+.btn-danger:hover{background:var(--danger);color:#fff}
+.btn-sm{padding:7px 12px;font-size:.76rem;border-radius:9px}
+
+.search-box{position:relative;flex:1;min-width:200px}
+.search-box input{width:100%;padding:10px 14px 10px 38px;border-radius:11px;border:1.5px solid var(--border);font-size:.85rem;background:#fff}
+.search-box input:focus{border-color:var(--teal-light)}
+.search-box .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.5}
+
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:.76rem;font-weight:700;color:var(--ink-soft);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em}
+.field input,.field select,.field textarea{width:100%;padding:11px 14px;border-radius:11px;border:1.5px solid var(--border);font-size:.9rem;background:#fdfcfa;transition:.2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--teal-light);box-shadow:0 0 0 4px rgba(42,140,143,.1);background:#fff}
+.field textarea{resize:vertical;min-height:80px}
+.field .hint{font-size:.72rem;color:var(--ink-soft);margin-top:4px;font-weight:500;text-transform:none;letter-spacing:0}
+.grid2{display:grid;grid-template-columns:1fr;gap:0 1rem}
+@media(min-width:640px){.grid2{grid-template-columns:1fr 1fr}}
+.grid3{display:grid;grid-template-columns:1fr;gap:0 1rem}
+@media(min-width:640px){.grid3{grid-template-columns:1fr 1fr 1fr}}
+
+.list{display:flex;flex-direction:column;gap:10px}
+.item-card{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;border:1px solid var(--border);background:#fdfcfa;transition:.2s;cursor:pointer;animation:fadeUp .35s ease backwards}
+.item-card:hover{border-color:var(--teal-light);box-shadow:var(--shadow);transform:translateX(3px)}
+#patientsList .item-card{border-left:5px solid var(--lavender);background:linear-gradient(90deg,rgba(142,124,195,.16),rgba(142,124,195,.02) 55%)}
+#sessionsList .item-card{border-left:5px solid var(--teal);background:linear-gradient(90deg,rgba(21,94,99,.14),rgba(21,94,99,.02) 55%)}
+#outcomesList .item-card{border-left:5px solid var(--amber);background:linear-gradient(90deg,rgba(232,163,61,.16),rgba(232,163,61,.02) 55%)}
+#reportsList .item-card{border-left:5px solid var(--success);background:linear-gradient(90deg,rgba(76,154,122,.16),rgba(76,154,122,.02) 55%)}
+.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--lavender));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex-shrink:0}
+.avatar.staff{background:linear-gradient(135deg,var(--amber),var(--lavender))}
+#staffList{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.staff-card{border-radius:16px;padding:1.15rem 1.25rem;color:#fff;box-shadow:0 8px 20px rgba(11,61,63,.22);cursor:pointer;transition:.2s;display:flex;flex-direction:column;gap:10px;animation:fadeUp .35s ease backwards;background:linear-gradient(135deg,var(--teal),var(--lavender))}
+.staff-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(11,61,63,.3)}
+.staff-card .sc-top{display:flex;align-items:center;gap:12px}
+.staff-card .sc-avatar{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex-shrink:0}
+.staff-card .sc-name{font-weight:700;font-size:1rem;line-height:1.3;text-shadow:0 1px 4px rgba(0,0,0,.35)}
+.staff-card .sc-role{font-size:.8rem;opacity:.96;margin-top:2px;text-shadow:0 1px 3px rgba(0,0,0,.3)}
+.staff-card .sc-badge{align-self:flex-start;background:rgba(255,255,255,.25);color:#fff;font-weight:700;font-size:.72rem;padding:4px 10px;border-radius:100px}
+.item-main{flex:1;min-width:0}
+.item-main .t{font-weight:700;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-main .s{font-size:.76rem;color:var(--ink-soft);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{font-size:.68rem;font-weight:700;padding:4px 10px;border-radius:100px;white-space:nowrap}
+.badge-teal{background:rgba(42,140,143,.12);color:var(--teal)}
+.badge-lav{background:rgba(142,124,195,.14);color:var(--lavender)}
+.badge-amber{background:rgba(232,163,61,.16);color:#B9791F}
+.badge-danger{background:rgba(217,108,90,.13);color:var(--danger)}
+.badge-success{background:rgba(76,154,122,.14);color:var(--success)}
+
+.empty{text-align:center;padding:3rem 1rem;color:var(--ink-soft)}
+.empty .ic{font-size:2.4rem;margin-bottom:.6rem;opacity:.6}
+.empty p{font-size:.85rem}
+
+.overlay{position:fixed;inset:0;background:rgba(11,38,34,.45);backdrop-filter:blur(3px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+.overlay.show{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--cream-card);border-radius:var(--radius);padding:1.8rem;width:min(560px,94vw);max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:riseIn .3s ease}
+.modal.wide{width:min(760px,96vw)}
+.modal h3{font-size:1.2rem;margin-bottom:1.2rem}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:1.4rem;flex-wrap:wrap}
+
+.tabs-inline{display:flex;gap:6px;margin-bottom:1.4rem;flex-wrap:wrap}
+.tab-btn{padding:9px 16px;border-radius:100px;font-size:.82rem;font-weight:700;border:1.5px solid var(--border);color:var(--ink-soft)}
+.tab-btn.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+.week-nav{display:flex;align-items:center;gap:10px;margin-bottom:1.2rem;flex-wrap:wrap}
+.week-nav .wn-label{font-weight:700;font-size:.9rem;background:var(--cream-card);border:1px solid var(--border);border-radius:100px;padding:9px 16px}
+
+/* AI report card */
+.ai-report{background:#fdfcfa;border:1.5px solid var(--border);border-radius:16px;padding:1.4rem;white-space:pre-wrap;font-size:.92rem;line-height:1.75;color:var(--ink)}
+.ai-report-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;border-bottom:1.5px solid var(--border);padding-bottom:1rem}
+.ai-report-head h4{font-size:1.05rem}
+.ai-report-head .meta{font-size:.76rem;color:var(--ink-soft);margin-top:3px}
+.ai-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--lavender),var(--lavender-light));color:#fff;font-size:.72rem;font-weight:700;padding:5px 12px;border-radius:100px}
+.ai-loading{display:flex;flex-direction:column;align-items:center;gap:.8rem;padding:2.4rem 1rem;color:var(--ink-soft)}
+.ai-spin{width:38px;height:38px;border-radius:50%;border:3px solid rgba(142,124,195,.2);border-top-color:var(--lavender);animation:spin .9s linear infinite}
+
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:100px;font-size:.85rem;font-weight:600;z-index:999;transition:.3s;box-shadow:var(--shadow-lg);max-width:90vw;text-align:center}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+.mobile-topbar{display:none}
+.is-staff .admin-only{display:none!important}
+@media(max-width:880px){
+  .shell{flex-direction:column}
+  .sidebar{position:fixed;bottom:0;left:0;right:0;top:auto;width:100%;height:auto;flex-direction:row;padding:.5rem .4rem;z-index:100;border-right:none;border-top:1px solid var(--border);justify-content:flex-start}
+  .brand,.sidebar-footer{display:none}
+  .nav{flex-direction:row;justify-content:flex-start;width:100%;overflow-x:auto;flex-wrap:nowrap}
+  .nav-item{flex-direction:column;gap:3px;padding:7px 10px;font-size:.6rem;flex:0 0 auto;min-width:58px;text-align:center;white-space:nowrap}
+  .nav-item .ic{font-size:1.15rem}
+  .main{padding:1.2rem 1rem 6rem}
+  .mobile-topbar{display:flex;align-items:center;gap:10px;margin-bottom:1.2rem}
+  .mobile-topbar .brand-icon{width:38px;height:38px;font-size:1rem;border-radius:11px}
+  .topbar h2{font-size:1.35rem}
+}
+@media print{
+  .sidebar,.topbar .btn,.no-print{display:none!important}
+  body{background:#fff}
+  .main{padding:0;max-width:100%}
+  .panel{box-shadow:none;border:1px solid #ddd}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-breath"><div class="blob blob1"></div><div class="blob blob2"></div><div class="blob blob3"></div></div>
+
+<div id="splashScreen">
+  <div class="splash-tj">TJ</div>
+  <div class="splash-sub">Terapiya Jurnalı</div>
+  <div class="splash-ring"></div>
+</div>
+
+<div id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-icon">TJ</div>
+    <h1>Terapiya Jurnalı</h1>
+    <p>AN Psixoloji Dəstək və Reabilitasiya Mərkəzi</p>
+    <div class="field" style="text-align:left"><label>Kimsiniz?</label><select id="loginUser"><option value="admin_master">🔑 Admin (Sistem sahibi)</option></select></div>
+    <input type="password" id="lockInput" inputmode="numeric" placeholder="PIN kod" maxlength="6" autocomplete="off">
+    <div class="lock-err" id="lockErr"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="tryUnlock()">Daxil ol</button>
+  </div>
+</div>
+
+<div id="app">
+<div class="shell">
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">TJ</div>
+      <div class="brand-text"><h1>Terapiya Jurnalı</h1><p>AN Psixoloji Mərkəz</p></div>
+    </div>
+    <div class="nav">
+      <div class="nav-item" data-view="dashboard" onclick="switchView('dashboard')"><span class="ic">🏠</span> Ana səhifə</div>
+      <div class="nav-item" data-view="staff" onclick="switchView('staff')"><span class="ic">🧑‍⚕️</span> Mütəxəssislər</div>
+      <div class="nav-item" data-view="patients" onclick="switchView('patients')"><span class="ic">🧒</span> Pasientlər</div>
+      <div class="nav-item" data-view="sessions" onclick="switchView('sessions')"><span class="ic">📅</span> Seanslar</div>
+      <div class="nav-item" data-view="outcomes" onclick="switchView('outcomes')"><span class="ic">📈</span> Həftəlik nəticələr</div>
+      <div class="nav-item" data-view="reports" onclick="switchView('reports')"><span class="ic">✨</span> AI Arayışlar</div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="who" id="whoAmI"></div>
+      <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center;margin-bottom:.8rem" onclick="logout()">Çıxış</button>
+      <div class="credit">By <a href="https://instagram.com/securtiy_group" target="_blank" rel="noopener">securtiy_group</a><br>© <span id="yr"></span> AN Psixoloji Dəstək və Reabilitasiya Mərkəzi</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="mobile-topbar"><div class="brand-icon">TJ</div><div><h1 style="font-size:1rem;color:var(--teal-deep)">Terapiya Jurnalı</h1></div></div>
+
+    <!-- DASHBOARD -->
+    <div class="view" id="view-dashboard">
+      <div class="topbar"><div><h2>Ana səhifə</h2><div class="sub" id="dashSub"></div></div></div>
+      <div class="stats">
+        <div class="stat-card teal"><div class="n" id="statWeekSessions">0</div><div class="l">Bu həftə keçirilmiş seans</div></div>
+        <div class="stat-card amber"><div class="n" id="statPendingOutcomes">0</div><div class="l">Yazılmamış həftəlik nəticə</div></div>
+        <div class="stat-card lavender"><div class="n" id="statActivePatients">0</div><div class="l">Aktiv pasient</div></div>
+        <div class="stat-card"><div class="n" id="statReportsThisWeek">0</div><div class="l">Bu həftə hazırlanan AI arayışı</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Bu həftənin seansları</h3></div>
+        <div class="list" id="todaySessionsList"></div>
+      </div>
+    </div>
+
+    <!-- STAFF -->
+    <div class="view" id="view-staff">
+      <div class="topbar">
+        <div><h2>Mütəxəssislər</h2><div class="sub">Mərkəzin klinik heyəti</div></div>
+        <button class="btn btn-primary" onclick="openStaffModal()">+ Yeni mütəxəssis</button>
+      </div>
+      <div id="staffList"></div>
+    </div>
+
+    <!-- PATIENTS -->
+    <div class="view" id="view-patients">
+      <div class="topbar">
+        <div><h2>Pasientlər</h2><div class="sub" id="patientsTotalSub"></div></div>
+        <button class="btn btn-primary" onclick="openPatientModal()">+ Yeni pasient</button>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="search-box"><span class="ic">🔍</span><input id="patientSearch" placeholder="Ad, telefon və ya müraciət səbəbinə görə axtar..." oninput="renderPatients()"></div></div>
+        <div class="list" id="patientsList"></div>
+      </div>
+    </div>
+
+    <!-- SESSIONS -->
+    <div class="view" id="view-sessions">
+      <div class="topbar">
+        <div><h2>Seanslar</h2><div class="sub">Seans planlaması və klinik qeydlər</div></div>
+        <button class="btn btn-primary" onclick="openSessionModal()">+ Yeni seans</button>
+      </div>
+      <div class="tabs-inline">
+        <div class="tab-btn active" data-per="week" onclick="setSessionPeriod('week')">Bu həftə</div>
+        <div class="tab-btn" data-per="today" onclick="setSessionPeriod('today')">Bu gün</div>
+        <div class="tab-btn" data-per="all" onclick="setSessionPeriod('all')">Hamısı</div>
+      </div>
+      <div class="panel">
+        <div class="list" id="sessionsList"></div>
+      </div>
+    </div>
+
+    <!-- OUTCOMES -->
+    <div class="view" id="view-outcomes">
+      <div class="topbar">
+        <div><h2>Həftəlik nəticələr</h2><div class="sub">Hər pasient üçün həftəlik irəliləyiş qeydi</div></div>
+        <button class="btn btn-primary" onclick="openOutcomeModal()">+ Yeni həftəlik nəticə</button>
+      </div>
+      <div class="panel">
+        <div class="list" id="outcomesList"></div>
+      </div>
+    </div>
+
+    <!-- AI REPORTS -->
+    <div class="view" id="view-reports">
+      <div class="topbar"><div><h2>AI Arayışlar</h2><div class="sub">Həftəlik nəticələr əsasında AI köməkliyi ilə hazırlanan arayışlar</div></div></div>
+      <div class="tabs-inline">
+        <div class="tab-btn active" data-rt="parent" onclick="setReportTab('parent')">👨‍👩‍👧 Valideyn arayışı</div>
+        <div class="tab-btn" data-rt="staff" onclick="setReportTab('staff')">🧑‍⚕️ Mütəxəssis hesabatı</div>
+      </div>
+
+      <div class="panel" id="reportGenPanel">
+        <!-- JS tərəfindən doldurulur -->
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Keçmiş arayışlar</h3></div>
+        <div class="list" id="reportsList"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- MODAL: STAFF -->
+<div class="overlay" id="modalStaff">
+  <div class="modal">
+    <h3 id="staffModalTitle">Yeni mütəxəssis</h3>
+    <input type="hidden" id="editStaffId">
+    <div class="grid2">
+      <div class="field"><label>Ad Soyad *</label><input id="stName" placeholder="Məs. Nərmin Əliyeva"></div>
+      <div class="field"><label>Telefon</label><input id="stPhone" placeholder="+994 XX XXX XX XX"></div>
+    </div>
+    <div class="field"><label>Vəzifə / İxtisas</label><input id="stRole" placeholder="Məs. Uşaq psixoloqu, ABA terapevti"></div>
+    <div class="field"><label>Qeydlər</label><textarea id="stNotes" placeholder="Əlavə qeydlər..."></textarea></div>
+    <div class="grid2 admin-only">
+      <div class="field"><label>İcazə səviyyəsi</label><select id="stAccessLevel"><option value="staff">Mütəxəssis (adi)</option><option value="admin">Admin</option></select></div>
+      <div class="field"><label>Giriş kodu (PIN)</label><input id="stPin" inputmode="numeric" maxlength="6" placeholder="Məs. 1111 (boş — giriş edə bilməz)"></div>
+    </div>
+    <p class="field hint" style="margin-top:-.6rem">Qeyd: bu, klinika-sistemi ilə eyni mütəxəssis siyahısıdır — burada etdiyiniz dəyişiklik hər iki tətbiqdə görünəcək.</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modalStaff')">Ləğv et</button>
+      <button class="btn btn-primary" onclick="saveStaff()">💾 Saxla</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: PATIENT -->
+<div class="overlay" id="modalPatient">
+  <div class="modal">
+    <h3 id="patientModalTitle">Yeni pasient</h3>
+    <input type="hidden" id="editPatientId">
+    <div class="grid2">
+      <div class="field"><label>Ad Soyad *</label><input id="fName" placeholder="Məs. Aysel Məmmədova"></div>
+      <div class="field"><label>Valideyn əlaqə nömrəsi</label><input id="fPhone" placeholder="+994 XX XXX XX XX"></div>
+      <div class="field"><label>Yaş</label><input id="fAge" type="number" placeholder="Məs. 7"></div>
+      <div class="field"><label>Cinsiyət</label><select id="fGender"><option value="">Seçin</option><option>Qadın</option><option>Kişi</option></select></div>
+    </div>
+    <div class="field"><label>Məsul mütəxəssis</label><select id="fPrimaryStaff"></select></div>
+    <div class="field"><label>Müraciət səbəbi</label><textarea id="fReason" placeholder="Nə üçün müraciət edib..."></textarea></div>
+    <div class="field"><label>Referans / kim tövsiyə edib</label><input id="fReferral" placeholder="İsteğe bağlı"></div>
+    <div class="field"><label>İlkin qeydlər</label><textarea id="fNotes" placeholder="Əlavə qeydlər..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modalPatient')">Ləğv et</button>
+      <button class="btn btn-primary" onclick="savePatient()">💾 Saxla</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SESSION -->
+<div class="overlay" id="modalSession">
+  <div class="modal">
+    <h3 id="sessionModalTitle">Yeni seans</h3>
+    <input type="hidden" id="editSessionId">
+    <div class="grid2">
+      <div class="field"><label>Pasient *</label><select id="ssPatient"></select></div>
+      <div class="field"><label>Mütəxəssis *</label><select id="ssStaff"></select></div>
+    </div>
+    <div class="grid3">
+      <div class="field"><label>Tarix *</label><input id="ssDate" type="date"></div>
+      <div class="field"><label>Saat</label><input id="ssTime" type="time"></div>
+      <div class="field"><label>Müddət (dəqiqə)</label><input id="ssDuration" type="number" placeholder="45"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Seans növü</label><select id="ssType">
+        <option>Fərdi seans</option><option>Qrup seansı</option><option>Valideyn məsləhəti</option><option>Qiymətləndirmə</option>
+      </select></div>
+      <div class="field"><label>Status</label><select id="ssStatus">
+        <option value="planlaşdırılıb">Planlaşdırılıb</option><option value="keçirildi">Keçirildi</option><option value="ləğv edildi">Ləğv edildi</option><option value="gəlmədi">Pasient gəlmədi</option>
+      </select></div>
+    </div>
+    <div class="field"><label>Mütəxəssis qeydləri</label><textarea id="ssNotes" placeholder="Seansda müşahidə olunanlar, işlənən mövzular, tapşırıqlar..." style="min-height:120px"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modalSession')">Ləğv et</button>
+      <button class="btn btn-primary" onclick="saveSession()">💾 Saxla</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: OUTCOME -->
+<div class="overlay" id="modalOutcome">
+  <div class="modal">
+    <h3 id="outcomeModalTitle">Yeni həftəlik nəticə</h3>
+    <input type="hidden" id="editOutcomeId">
+    <div class="grid2">
+      <div class="field"><label>Pasient *</label><select id="ocPatient" onchange="onOutcomePatientChange()"></select></div>
+      <div class="field"><label>Mütəxəssis *</label><select id="ocStaff"></select></div>
+    </div>
+    <div class="field"><label>Həftənin başlanğıcı (Bazar ertəsi) *</label><input id="ocWeekStart" type="date" onchange="renderOutcomeWeekSessions()"></div>
+    <div class="field" id="ocWeekSessionsBox" style="display:none">
+      <label>Bu həftə keçirilən seanslar</label>
+      <div id="ocWeekSessions" style="font-size:.82rem;color:var(--ink-soft);background:#fdfcfa;border:1px solid var(--border);border-radius:11px;padding:10px 14px"></div>
+    </div>
+    <div class="field"><label>Ümumi nəticə</label><textarea id="ocSummary" placeholder="Bu həftə ümumi olaraq necə keçdi..."></textarea></div>
+    <div class="field"><label>İrəliləyiş / müşahidə olunan güclü tərəflər</label><textarea id="ocProgress" placeholder="Bu həftə hansı sahələrdə irəliləyiş oldu..."></textarea></div>
+    <div class="field"><label>Çətinliklər</label><textarea id="ocChallenges" placeholder="Bu həftə hansı çətinliklər müşahidə olundu..."></textarea></div>
+    <div class="field"><label>Növbəti addımlar / tövsiyələr</label><textarea id="ocNextSteps" placeholder="Növbəti həftə üçün plan..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modalOutcome')">Ləğv et</button>
+      <button class="btn btn-primary" onclick="saveOutcome()">💾 Saxla</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: AI REPORT VIEW -->
+<div class="overlay" id="modalReportView">
+  <div class="modal wide">
+    <div id="reportViewBody"></div>
+    <div class="modal-actions no-print">
+      <button class="btn btn-outline" onclick="closeModal('modalReportView')">Bağla</button>
+      <button class="btn btn-outline" onclick="copyReportContent()">📋 Kopyala</button>
+      <button class="btn btn-primary" onclick="window.print()">🖨️ Çap et</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCBhyGNzZRGgQShP_C9kwAzTm_g_0zJlzg",
+  authDomain: "an-psixoloji-33442.firebaseapp.com",
+  databaseURL: "https://an-psixoloji-33442-default-rtdb.firebaseio.com",
+  projectId: "an-psixoloji-33442",
+  storageBucket: "an-psixoloji-33442.firebasestorage.app",
+  messagingSenderId: "528809299356",
+  appId: "1:528809299356:web:59cae89a64e446dc520c59"
+};
+const fbApp = initializeApp(firebaseConfig);
+const fbDb = getDatabase(fbApp);
+const fbAuth = getAuth(fbApp);
+
+// Pasient və mütəxəssis siyahısı klinika-sistemi ilə paylaşılır — eyni Firebase node-ları.
+const patientsRef = ref(fbDb, 'klinika/patients');
+const staffRef = ref(fbDb, 'klinika/staff');
+const sessionsRef = ref(fbDb, 'terapiya/sessions');
+const outcomesRef = ref(fbDb, 'terapiya/weeklyOutcomes');
+const reportsRef = ref(fbDb, 'terapiya/aiReports');
+
+window.DB = { patients:{}, staff:{}, sessions:{}, outcomes:{}, reports:{} };
+
+function onDataUpdate(){
+  if(typeof window.refreshLoginOptions === 'function') window.refreshLoginOptions();
+  if(typeof window.renderAll === 'function') window.renderAll();
+}
+function onFbError(label, err){
+  console.error('Firebase xətası ('+label+'):', err);
+  if(typeof window.showFbError === 'function') window.showFbError(label, err);
+}
+function startFbListeners(){
+  onValue(patientsRef, snap => { window.DB.patients = snap.val() || {}; onDataUpdate(); }, err => onFbError('patients', err));
+  onValue(staffRef, snap => { window.DB.staff = snap.val() || {}; onDataUpdate(); }, err => onFbError('staff', err));
+  onValue(sessionsRef, snap => { window.DB.sessions = snap.val() || {}; onDataUpdate(); }, err => onFbError('sessions', err));
+  onValue(outcomesRef, snap => { window.DB.outcomes = snap.val() || {}; onDataUpdate(); }, err => onFbError('outcomes', err));
+  onValue(reportsRef, snap => { window.DB.reports = snap.val() || {}; onDataUpdate(); }, err => onFbError('reports', err));
+}
+// Firebase Rules "auth != null" tələb etdiyi üçün görünməz (anonim) giriş.
+signInAnonymously(fbAuth).then(startFbListeners).catch(err => onFbError('auth', err));
+
+function wrapWrite(promise, label){
+  return promise.catch(err => { console.error('Yazma xətası ('+label+'):', err); if(typeof window.showFbError==='function') window.showFbError(label, err); });
+}
+window.__fbAddPatient = (val) => wrapWrite(push(patientsRef, val), 'pasient əlavə etmə');
+window.__fbUpdatePatient = (id, val) => wrapWrite(update(ref(fbDb, `klinika/patients/${id}`), val), 'pasient yeniləmə');
+window.__fbRemovePatient = (id) => wrapWrite(remove(ref(fbDb, `klinika/patients/${id}`)), 'pasient silmə');
+window.__fbAddStaff = (val) => wrapWrite(push(staffRef, val), 'mütəxəssis əlavə etmə');
+window.__fbUpdateStaff = (id, val) => wrapWrite(update(ref(fbDb, `klinika/staff/${id}`), val), 'mütəxəssis yeniləmə');
+window.__fbRemoveStaff = (id) => wrapWrite(remove(ref(fbDb, `klinika/staff/${id}`)), 'mütəxəssis silmə');
+window.__fbAddSession = (val) => wrapWrite(push(sessionsRef, val), 'seans əlavə etmə');
+window.__fbUpdateSession = (id, val) => wrapWrite(update(ref(fbDb, `terapiya/sessions/${id}`), val), 'seans yeniləmə');
+window.__fbRemoveSession = (id) => wrapWrite(remove(ref(fbDb, `terapiya/sessions/${id}`)), 'seans silmə');
+window.__fbAddOutcome = (val) => wrapWrite(push(outcomesRef, val), 'həftəlik nəticə əlavə etmə');
+window.__fbUpdateOutcome = (id, val) => wrapWrite(update(ref(fbDb, `terapiya/weeklyOutcomes/${id}`), val), 'həftəlik nəticə yeniləmə');
+window.__fbRemoveOutcome = (id) => wrapWrite(remove(ref(fbDb, `terapiya/weeklyOutcomes/${id}`)), 'həftəlik nəticə silmə');
+window.__fbAddReport = (val) => wrapWrite(push(reportsRef, val), 'AI arayışı saxlama');
+window.__fbRemoveReport = (id) => wrapWrite(remove(ref(fbDb, `terapiya/aiReports/${id}`)), 'AI arayışı silmə');
+</script>
+
+<script>
+/* ============ LOGIN / ROLES ============ */
+const MASTER_ADMIN_PIN = "1987"; // klinika-sistemi ilə eyni admin kodu
+window.currentUser = null;
+
+window.refreshLoginOptions = function(){
+  const sel = document.getElementById('loginUser');
+  if(!sel || document.getElementById('app').style.display === 'block') return;
+  const current = sel.value;
+  const staffOpts = Object.entries(window.DB.staff||{})
+    .filter(([id,s]) => s.pin)
+    .sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''))
+    .map(([id,s])=>`<option value="staff:${id}">${s.accessLevel==='admin'?'🔑':'🧑‍⚕️'} ${esc(s.name)}</option>`).join('');
+  sel.innerHTML = `<option value="admin_master">🔑 Admin (Sistem sahibi)</option>` + staffOpts;
+  if([...sel.options].some(o=>o.value===current)) sel.value = current;
+}
+function tryUnlock(){
+  const selVal = document.getElementById('loginUser').value;
+  const val = document.getElementById('lockInput').value;
+  let user = null;
+  if(selVal === 'admin_master'){
+    if(val === MASTER_ADMIN_PIN) user = {id:'admin_master', name:'Admin (Sistem sahibi)', role:'admin'};
+  } else if(selVal.startsWith('staff:')){
+    const sid = selVal.slice(6);
+    const s = window.DB.staff[sid];
+    if(s && s.pin && val === s.pin) user = {id:sid, name:s.name, role: s.accessLevel==='admin' ? 'admin' : 'staff'};
+  }
+  if(user){
+    sessionStorage.setItem('tj_user', JSON.stringify(user));
+    window.currentUser = user;
+    document.getElementById('lockScreen').style.display='none';
+    document.getElementById('app').style.display='block';
+    applyRoleUI();
+    renderAll();
+  } else {
+    document.getElementById('lockErr').textContent = 'PIN yanlışdır, yenidən cəhd edin';
+    document.getElementById('lockInput').value='';
+  }
+}
+window.tryUnlock = tryUnlock;
+function applyRoleUI(){
+  const admin = window.currentUser && window.currentUser.role === 'admin';
+  document.body.classList.toggle('is-admin', admin);
+  document.body.classList.toggle('is-staff', !admin);
+  document.getElementById('whoAmI').textContent = window.currentUser ? ('👋 ' + window.currentUser.name) : '';
+}
+window.logout = function(){
+  sessionStorage.removeItem('tj_user');
+  window.currentUser = null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('lockScreen').style.display='flex';
+  document.getElementById('lockInput').value='';
+}
+function isAdmin(){ return window.currentUser && window.currentUser.role === 'admin'; }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function toast(msg){ const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(window.__toastTimer); window.__toastTimer = setTimeout(()=>t.classList.remove('show'), 2600); }
+window.showFbError = function(label, err){ toast('⚠️ Xəta (' + label + '): ' + (err?.message || 'naməlum')); }
+
+/* ============ INIT ============ */
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  setTimeout(()=>document.getElementById('splashScreen').classList.add('hide'), 900);
+  const saved = sessionStorage.getItem('tj_user');
+  if(saved){
+    window.currentUser = JSON.parse(saved);
+    document.getElementById('lockScreen').style.display='none';
+    document.getElementById('app').style.display='block';
+    applyRoleUI();
+  }
+  switchView('dashboard');
+});
+
+/* ============ NAVIGATION ============ */
+window.switchView = function(view){
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view===view));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  renderAll();
+}
+
+/* ============ WEEK HELPERS ============ */
+function toISODate(d){ const off = d.getTimezoneOffset(); const local = new Date(d.getTime() - off*60000); return local.toISOString().slice(0,10); }
+function mondayOf(dateStr){
+  const d = dateStr ? new Date(dateStr+'T00:00:00') : new Date();
+  const day = d.getDay(); // 0=Bazar
+  const diff = day===0 ? -6 : 1-day;
+  d.setDate(d.getDate()+diff);
+  return toISODate(d);
+}
+function sundayOf(weekStart){
+  const d = new Date(weekStart+'T00:00:00');
+  d.setDate(d.getDate()+6);
+  return toISODate(d);
+}
+function currentWeekStart(){ return mondayOf(toISODate(new Date())); }
+function fmtDate(s){ if(!s) return ''; const d=new Date(s+'T00:00:00'); return d.toLocaleDateString('az-AZ',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function fmtWeekRange(ws){ return fmtDate(ws) + ' – ' + fmtDate(sundayOf(ws)); }
+
+/* ============ RENDER ALL ============ */
+window.renderAll = function(){
+  if(!window.currentUser) return;
+  populateSelects();
+  renderDashboard();
+  renderStaff();
+  renderPatients();
+  renderSessions();
+  renderOutcomes();
+  renderReportsList();
+  renderReportGenPanel();
+}
+
+function myStaffId(){ return window.currentUser.role==='staff' ? window.currentUser.id : null; }
+
+function populateSelects(){
+  const staffEntries = Object.entries(window.DB.staff||{}).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
+  const patientEntries = Object.entries(window.DB.patients||{}).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
+  const staffOptHtml = staffEntries.map(([id,s])=>`<option value="${id}">${esc(s.name)}</option>`).join('');
+  const patientOptHtml = `<option value="">Seçin</option>` + patientEntries.map(([id,p])=>`<option value="${id}">${esc(p.name)}</option>`).join('');
+
+  const fPrimaryStaff = document.getElementById('fPrimaryStaff');
+  if(fPrimaryStaff) fPrimaryStaff.innerHTML = `<option value="">Seçilməyib</option>` + staffOptHtml;
+
+  const ssPatient = document.getElementById('ssPatient');
+  if(ssPatient) ssPatient.innerHTML = patientOptHtml;
+  const ssStaff = document.getElementById('ssStaff');
+  if(ssStaff) ssStaff.innerHTML = staffOptHtml;
+
+  const ocPatient = document.getElementById('ocPatient');
+  if(ocPatient) ocPatient.innerHTML = patientOptHtml;
+  const ocStaff = document.getElementById('ocStaff');
+  if(ocStaff) ocStaff.innerHTML = staffOptHtml;
+
+  if(!isAdmin() && myStaffId()){
+    if(ssStaff){ ssStaff.value = myStaffId(); ssStaff.disabled = true; }
+    if(ocStaff){ ocStaff.value = myStaffId(); ocStaff.disabled = true; }
+  } else {
+    if(ssStaff) ssStaff.disabled = false;
+    if(ocStaff) ocStaff.disabled = false;
+  }
+}
+
+/* ============ DASHBOARD ============ */
+function renderDashboard(){
+  const el = document.getElementById('view-dashboard'); if(!el.classList.contains('active')) { /* yenə də statistikanı hesabla, ucuzdur */ }
+  const ws = currentWeekStart(), we = sundayOf(ws);
+  const staffFilter = myStaffId();
+  const sessions = Object.entries(window.DB.sessions||{}).filter(([id,s]) => !staffFilter || s.staffId===staffFilter);
+  const weekSessions = sessions.filter(([id,s]) => s.date>=ws && s.date<=we);
+  const heldThisWeek = weekSessions.filter(([id,s]) => s.status==='keçirildi');
+  document.getElementById('statWeekSessions').textContent = heldThisWeek.length;
+
+  const patients = staffFilter ? Object.entries(window.DB.patients||{}).filter(([id,p])=>p.primaryStaffId===staffFilter) : Object.entries(window.DB.patients||{});
+  document.getElementById('statActivePatients').textContent = patients.length;
+
+  const outcomes = Object.entries(window.DB.outcomes||{}).filter(([id,o]) => o.weekStart===ws && (!staffFilter || o.staffId===staffFilter));
+  const patientsWithSessionsThisWeek = new Set(heldThisWeek.map(([id,s])=>s.patientId));
+  const patientsWithOutcome = new Set(outcomes.map(([id,o])=>o.patientId));
+  let pending = 0;
+  patientsWithSessionsThisWeek.forEach(pid => { if(!patientsWithOutcome.has(pid)) pending++; });
+  document.getElementById('statPendingOutcomes').textContent = pending;
+
+  const reports = Object.entries(window.DB.reports||{}).filter(([id,r]) => r.weekStart===ws && (!staffFilter || r.staffId===staffFilter || r.generatedByStaffId===staffFilter));
+  document.getElementById('statReportsThisWeek').textContent = reports.length;
+
+  document.getElementById('dashSub').textContent = 'Bu həftə: ' + fmtWeekRange(ws);
+
+  const list = document.getElementById('todaySessionsList');
+  const sorted = weekSessions.sort((a,b)=> (a[1].date+a[1].time).localeCompare(b[1].date+b[1].time));
+  if(!sorted.length){ list.innerHTML = `<div class="empty"><div class="ic">📅</div><p>Bu həftə üçün seans yoxdur.</p></div>`; return; }
+  list.innerHTML = sorted.map(([id,s],i)=> sessionCardHtml(id,s,i)).join('');
+}
+
+/* ============ STAFF ============ */
+function initials(name){ return (name||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
+window.renderStaff = function(){
+  const list = document.getElementById('staffList');
+  const entries = Object.entries(window.DB.staff||{}).sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''));
+  if(!entries.length){ list.innerHTML = `<div class="empty"><div class="ic">🧑‍⚕️</div><p>Hələ mütəxəssis əlavə edilməyib.</p></div>`; return; }
+  list.innerHTML = entries.map(([id,s],i)=>`
+    <div class="staff-card" style="animation-delay:${i*0.03}s" onclick="openStaffModal('${id}')">
+      <div class="sc-top">
+        <div class="sc-avatar">${esc(initials(s.name))}</div>
+        <div><div class="sc-name">${esc(s.name)}</div><div class="sc-role">${esc(s.role||'—')}</div></div>
+      </div>
+      ${s.accessLevel==='admin' ? '<div class="sc-badge">🔑 Admin</div>' : ''}
+    </div>`).join('');
+}
+window.openStaffModal = function(id){
+  document.getElementById('editStaffId').value = id||'';
+  document.getElementById('staffModalTitle').textContent = id? 'Mütəxəssisi redaktə et':'Yeni mütəxəssis';
+  if(id){
+    const s = window.DB.staff[id];
+    stName.value=s.name||''; stPhone.value=s.phone||''; stRole.value=s.role||''; stNotes.value=s.notes||'';
+    stAccessLevel.value = s.accessLevel||'staff'; stPin.value = s.pin||'';
+  } else {
+    stName.value=stPhone.value=stRole.value=stNotes.value=stPin.value=''; stAccessLevel.value='staff';
+  }
+  openModal('modalStaff');
+}
+window.saveStaff = function(){
+  const name = stName.value.trim();
+  if(!name){ toast('Ad daxil edin'); return; }
+  const id = editStaffId.value;
+  const existing = window.DB.staff[id];
+  const val = {
+    name, phone: stPhone.value.trim(), role: stRole.value.trim(), notes: stNotes.value.trim(),
+    accessLevel: isAdmin() ? stAccessLevel.value : (existing?.accessLevel||'staff'),
+    pin: isAdmin() ? stPin.value.trim() : (existing?.pin||''),
+    createdAt: existing?.createdAt || Date.now()
+  };
+  if(id){ window.__fbUpdateStaff(id, val); toast('Mütəxəssis yeniləndi ✓'); }
+  else { window.__fbAddStaff(val); toast('Mütəxəssis əlavə olundu ✓'); }
+  closeModal('modalStaff');
+}
+
+/* ============ PATIENTS ============ */
+window.renderPatients = function(){
+  const q = (document.getElementById('patientSearch')?.value||'').toLowerCase();
+  const list = document.getElementById('patientsList');
+  const staffFilter = myStaffId();
+  let entries = Object.entries(window.DB.patients||{});
+  if(staffFilter) entries = entries.filter(([id,p]) => p.primaryStaffId===staffFilter);
+  document.getElementById('patientsTotalSub').textContent = entries.length + ' pasient';
+  entries = entries.sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+  const filtered = entries.filter(([id,p])=> !q || (p.name||'').toLowerCase().includes(q) || (p.phone||'').includes(q) || (p.reason||'').toLowerCase().includes(q));
+  if(!filtered.length){ list.innerHTML = `<div class="empty"><div class="ic">🌱</div><p>Pasient tapılmadı.</p></div>`; return; }
+  list.innerHTML = filtered.map(([id,p],i)=>{
+    const staffName = p.primaryStaffId ? esc(window.DB.staff[p.primaryStaffId]?.name||'') : '';
+    return `<div class="item-card" style="animation-delay:${i*0.03}s" onclick="openPatientModal('${id}')">
+      <div class="avatar">${esc(initials(p.name))}</div>
+      <div class="item-main"><div class="t">${esc(p.name)}${p.age?` <span style="font-weight:500;color:var(--ink-soft)">(${esc(p.age)} yaş)</span>`:''}</div>
+      <div class="s">${p.phone?esc(p.phone)+' · ':''}${staffName?'Mütəxəssis: '+staffName:'Mütəxəssis təyin edilməyib'}</div></div>
+      ${isAdmin() ? `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deletePatient('${id}')">Sil</button>` : ''}
+    </div>`;
+  }).join('');
+}
+window.openPatientModal = function(id){
+  document.getElementById('editPatientId').value = id||'';
+  document.getElementById('patientModalTitle').textContent = id? 'Pasienti redaktə et':'Yeni pasient';
+  populateSelects();
+  if(id){
+    const p = window.DB.patients[id];
+    fName.value=p.name||''; fPhone.value=p.phone||''; fAge.value=p.age||''; fGender.value=p.gender||'';
+    fReason.value=p.reason||''; fReferral.value=p.referral||''; fNotes.value=p.notes||''; fPrimaryStaff.value=p.primaryStaffId||'';
+  } else {
+    fName.value=fPhone.value=fAge.value=fReason.value=fReferral.value=fNotes.value=''; fGender.value=''; fPrimaryStaff.value = myStaffId()||'';
+  }
+  openModal('modalPatient');
+}
+window.savePatient = function(){
+  const name = fName.value.trim();
+  if(!name){ toast('Ad daxil edin'); return; }
+  const id = editPatientId.value;
+  const existing = window.DB.patients[id];
+  const val = {
+    name, phone:fPhone.value.trim(), age:fAge.value.trim(), gender:fGender.value,
+    reason:fReason.value.trim(), referral:fReferral.value.trim(), notes:fNotes.value.trim(),
+    primaryStaffId: fPrimaryStaff.value || null,
+    createdAt: existing?.createdAt || Date.now()
+  };
+  if(id){ window.__fbUpdatePatient(id, val); toast('Pasient yeniləndi ✓'); }
+  else { window.__fbAddPatient(val); toast('Pasient əlavə olundu ✓'); }
+  closeModal('modalPatient');
+}
+window.deletePatient = function(id){
+  if(!isAdmin()){ toast('⛔ Yalnız admin silə bilər'); return; }
+  if(!confirm('Bu pasienti və bütün seans/nəticə qeydlərini silmək istəyirsiniz?')) return;
+  window.__fbRemovePatient(id);
+  Object.entries(window.DB.sessions).forEach(([sid,s])=>{ if(s.patientId===id) window.__fbRemoveSession(sid); });
+  Object.entries(window.DB.outcomes).forEach(([oid,o])=>{ if(o.patientId===id) window.__fbRemoveOutcome(oid); });
+  toast('Pasient silindi');
+}
+
+/* ============ SESSIONS ============ */
+window.__sessionPeriod = 'week';
+window.setSessionPeriod = function(p){
+  window.__sessionPeriod = p;
+  document.querySelectorAll('#view-sessions .tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.per===p));
+  renderSessions();
+}
+function sessionStatusBadge(status){
+  const map = { 'keçirildi':'badge-success', 'planlaşdırılıb':'badge-teal', 'ləğv edildi':'badge-danger', 'gəlmədi':'badge-amber' };
+  return `<span class="badge ${map[status]||'badge-teal'}">${esc(status)}</span>`;
+}
+function sessionCardHtml(id,s,i){
+  const p = window.DB.patients[s.patientId] || {}; const st = window.DB.staff[s.staffId] || {};
+  return `<div class="item-card" style="animation-delay:${i*0.03}s" onclick="openSessionModal('${id}')">
+    <div class="avatar">${esc(initials(p.name))}</div>
+    <div class="item-main">
+      <div class="t">${esc(p.name||'Silinmiş pasient')} <span style="font-weight:500;color:var(--ink-soft)">— ${esc(st.name||'')}</span></div>
+      <div class="s">${fmtDate(s.date)}${s.time?' · '+esc(s.time):''} · ${esc(s.type||'')}</div>
+    </div>
+    ${sessionStatusBadge(s.status)}
+    ${isAdmin() ? `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteSession('${id}')">Sil</button>` : ''}
+  </div>`;
+}
+window.renderSessions = function(){
+  const list = document.getElementById('sessionsList');
+  const staffFilter = myStaffId();
+  let entries = Object.entries(window.DB.sessions||{});
+  if(staffFilter) entries = entries.filter(([id,s])=>s.staffId===staffFilter);
+  const today = toISODate(new Date());
+  const ws = currentWeekStart(), we = sundayOf(ws);
+  if(window.__sessionPeriod==='today') entries = entries.filter(([id,s])=>s.date===today);
+  else if(window.__sessionPeriod==='week') entries = entries.filter(([id,s])=>s.date>=ws && s.date<=we);
+  entries = entries.sort((a,b)=> (b[1].date+((b[1].time)||'')).localeCompare(a[1].date+((a[1].time)||'')));
+  if(!entries.length){ list.innerHTML = `<div class="empty"><div class="ic">📅</div><p>Bu aralıqda seans yoxdur.</p></div>`; return; }
+  list.innerHTML = entries.map(([id,s],i)=> sessionCardHtml(id,s,i)).join('');
+}
+window.openSessionModal = function(id){
+  document.getElementById('editSessionId').value = id||'';
+  document.getElementById('sessionModalTitle').textContent = id? 'Seansı redaktə et':'Yeni seans';
+  populateSelects();
+  if(id){
+    const s = window.DB.sessions[id];
+    ssPatient.value=s.patientId||''; ssStaff.value=s.staffId||''; ssDate.value=s.date||''; ssTime.value=s.time||'';
+    ssDuration.value=s.duration||''; ssType.value=s.type||'Fərdi seans'; ssStatus.value=s.status||'planlaşdırılıb'; ssNotes.value=s.notes||'';
+  } else {
+    ssPatient.value=''; ssDate.value=toISODate(new Date()); ssTime.value=''; ssDuration.value='45';
+    ssType.value='Fərdi seans'; ssStatus.value='planlaşdırılıb'; ssNotes.value='';
+    if(!isAdmin() && myStaffId()) ssStaff.value = myStaffId();
+  }
+  openModal('modalSession');
+}
+window.saveSession = function(){
+  if(!ssPatient.value){ toast('Pasient seçin'); return; }
+  if(!ssStaff.value){ toast('Mütəxəssis seçin'); return; }
+  if(!ssDate.value){ toast('Tarix daxil edin'); return; }
+  const id = editSessionId.value;
+  const existing = window.DB.sessions[id];
+  const val = {
+    patientId: ssPatient.value, staffId: ssStaff.value, date: ssDate.value, time: ssTime.value,
+    duration: ssDuration.value?parseInt(ssDuration.value):null, type: ssType.value, status: ssStatus.value,
+    notes: ssNotes.value.trim(), createdAt: existing?.createdAt || Date.now(), createdBy: existing?.createdBy || window.currentUser.name
+  };
+  if(id){ window.__fbUpdateSession(id, val); toast('Seans yeniləndi ✓'); }
+  else { window.__fbAddSession(val); toast('Seans əlavə olundu ✓'); }
+  closeModal('modalSession');
+}
+window.deleteSession = function(id){
+  if(!isAdmin()){ toast('⛔ Yalnız admin silə bilər'); return; }
+  if(!confirm('Bu seansı silmək istəyirsiniz?')) return;
+  window.__fbRemoveSession(id);
+  toast('Seans silindi');
+}
+
+/* ============ WEEKLY OUTCOMES ============ */
+window.renderOutcomes = function(){
+  const list = document.getElementById('outcomesList');
+  const staffFilter = myStaffId();
+  let entries = Object.entries(window.DB.outcomes||{});
+  if(staffFilter) entries = entries.filter(([id,o])=>o.staffId===staffFilter);
+  entries = entries.sort((a,b)=> b[1].weekStart.localeCompare(a[1].weekStart));
+  if(!entries.length){ list.innerHTML = `<div class="empty"><div class="ic">📈</div><p>Hələ həftəlik nəticə yazılmayıb.</p></div>`; return; }
+  list.innerHTML = entries.map(([id,o],i)=>{
+    const p = window.DB.patients[o.patientId] || {}; const st = window.DB.staff[o.staffId] || {};
+    return `<div class="item-card" style="animation-delay:${i*0.03}s" onclick="openOutcomeModal('${id}')">
+      <div class="avatar">${esc(initials(p.name))}</div>
+      <div class="item-main"><div class="t">${esc(p.name||'Silinmiş pasient')} <span style="font-weight:500;color:var(--ink-soft)">— ${esc(st.name||'')}</span></div>
+      <div class="s">Həftə: ${fmtWeekRange(o.weekStart)}</div></div>
+      ${isAdmin() ? `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteOutcome('${id}')">Sil</button>` : ''}
+    </div>`;
+  }).join('');
+}
+window.onOutcomePatientChange = function(){
+  if(!isAdmin()) return;
+  const pid = ocPatient.value;
+  const p = window.DB.patients[pid];
+  if(p && p.primaryStaffId) ocStaff.value = p.primaryStaffId;
+  renderOutcomeWeekSessions();
+}
+window.renderOutcomeWeekSessions = function(){
+  const box = document.getElementById('ocWeekSessionsBox'), holder = document.getElementById('ocWeekSessions');
+  const pid = ocPatient.value, ws = ocWeekStart.value;
+  if(!pid || !ws){ box.style.display='none'; return; }
+  const we = sundayOf(ws);
+  const sessions = Object.entries(window.DB.sessions||{}).filter(([id,s]) => s.patientId===pid && s.date>=ws && s.date<=we);
+  box.style.display='block';
+  if(!sessions.length){ holder.innerHTML = 'Bu həftə üçün qeyd olunmuş seans yoxdur.'; return; }
+  holder.innerHTML = sessions.sort((a,b)=>a[1].date.localeCompare(b[1].date)).map(([id,s])=>
+    `• ${fmtDate(s.date)} — ${esc(s.type)} (${esc(s.status)})`).join('<br>');
+}
+window.openOutcomeModal = function(id){
+  document.getElementById('editOutcomeId').value = id||'';
+  document.getElementById('outcomeModalTitle').textContent = id? 'Həftəlik nəticəni redaktə et':'Yeni həftəlik nəticə';
+  populateSelects();
+  if(id){
+    const o = window.DB.outcomes[id];
+    ocPatient.value=o.patientId||''; ocStaff.value=o.staffId||''; ocWeekStart.value=o.weekStart||'';
+    ocSummary.value=o.summary||''; ocProgress.value=o.progress||''; ocChallenges.value=o.challenges||''; ocNextSteps.value=o.nextSteps||'';
+  } else {
+    ocPatient.value=''; ocWeekStart.value=currentWeekStart();
+    ocSummary.value=ocProgress.value=ocChallenges.value=ocNextSteps.value='';
+    if(!isAdmin() && myStaffId()) ocStaff.value = myStaffId();
+  }
+  renderOutcomeWeekSessions();
+  openModal('modalOutcome');
+}
+window.saveOutcome = function(){
+  if(!ocPatient.value){ toast('Pasient seçin'); return; }
+  if(!ocStaff.value){ toast('Mütəxəssis seçin'); return; }
+  if(!ocWeekStart.value){ toast('Həftə tarixi seçin'); return; }
+  const weekStart = mondayOf(ocWeekStart.value);
+  const id = editOutcomeId.value;
+  const existing = window.DB.outcomes[id];
+  const val = {
+    patientId: ocPatient.value, staffId: ocStaff.value, weekStart, weekEnd: sundayOf(weekStart),
+    summary: ocSummary.value.trim(), progress: ocProgress.value.trim(), challenges: ocChallenges.value.trim(),
+    nextSteps: ocNextSteps.value.trim(), createdAt: existing?.createdAt || Date.now(), createdBy: window.currentUser.name
+  };
+  if(id){ window.__fbUpdateOutcome(id, val); toast('Həftəlik nəticə yeniləndi ✓'); }
+  else { window.__fbAddOutcome(val); toast('Həftəlik nəticə əlavə olundu ✓'); }
+  closeModal('modalOutcome');
+}
+window.deleteOutcome = function(id){
+  if(!isAdmin()){ toast('⛔ Yalnız admin silə bilər'); return; }
+  if(!confirm('Bu həftəlik nəticəni silmək istəyirsiniz?')) return;
+  window.__fbRemoveOutcome(id);
+  toast('Silindi');
+}
+
+/* ============ MODAL HELPERS ============ */
+window.openModal = function(id){ document.getElementById(id).classList.add('show'); }
+window.closeModal = function(id){ document.getElementById(id).classList.remove('show'); }
+</script>
+
+<!-- AI Arayışlar məntiqi ayrı fayldan yüklənir -->
+<script src="reports.js"></script>
+</body>
+</html>
