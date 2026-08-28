@@ -207,6 +207,8 @@ a{color:inherit;text-decoration:none}
 
 .mobile-topbar{display:none}
 .is-staff .admin-only{display:none!important}
+.ai-only{display:none!important}
+body.ai-reports-allowed .ai-only{display:flex!important}
 @media(max-width:880px){
   .shell{flex-direction:column}
   .sidebar{position:fixed;bottom:0;left:0;right:0;top:auto;width:100%;height:auto;flex-direction:row;padding:.5rem .4rem;z-index:100;border-right:none;border-top:1px solid var(--border);justify-content:flex-start}
@@ -262,7 +264,7 @@ a{color:inherit;text-decoration:none}
       <div class="nav-item" data-view="patients" onclick="switchView('patients')"><span class="ic">🧒</span> Pasientlər</div>
       <div class="nav-item" data-view="sessions" onclick="switchView('sessions')"><span class="ic">📅</span> Seanslar</div>
       <div class="nav-item" data-view="outcomes" onclick="switchView('outcomes')"><span class="ic">📈</span> Həftəlik nəticələr</div>
-      <div class="nav-item" data-view="reports" onclick="switchView('reports')"><span class="ic">✨</span> AI Arayışlar</div>
+      <div class="nav-item ai-only" data-view="reports" onclick="switchView('reports')"><span class="ic">✨</span> AI Arayışlar</div>
     </div>
     <div class="sidebar-footer">
       <div class="who" id="whoAmI"></div>
@@ -347,7 +349,7 @@ a{color:inherit;text-decoration:none}
       <div class="topbar"><div><h2>AI Arayışlar</h2><div class="sub">Həftəlik nəticələr əsasında AI köməkliyi ilə hazırlanan arayışlar</div></div></div>
       <div class="tabs-inline">
         <div class="tab-btn active" data-rt="parent" onclick="setReportTab('parent')">👨‍👩‍👧 Valideyn arayışı</div>
-        <div class="tab-btn" data-rt="staff" onclick="setReportTab('staff')">🧑‍⚕️ Mütəxəssis hesabatı</div>
+        <div class="tab-btn" data-rt="staff" onclick="setReportTab('staff')">🧑‍⚕️ Mütəxəssis qiymətləndirməsi</div>
       </div>
 
       <div class="panel" id="reportGenPanel">
@@ -382,6 +384,10 @@ a{color:inherit;text-decoration:none}
     <div class="grid2 admin-only">
       <div class="field"><label>İcazə səviyyəsi</label><select id="stAccessLevel"><option value="staff">Mütəxəssis (adi)</option><option value="admin">Admin</option></select></div>
       <div class="field"><label>Giriş kodu (PIN)</label><input id="stPin" inputmode="numeric" maxlength="6" placeholder="Məs. 1111 (boş — giriş edə bilməz)"></div>
+    </div>
+    <div class="field admin-only" style="display:flex;align-items:center;gap:8px">
+      <input type="checkbox" id="stAiReportsAccess" style="width:auto">
+      <label style="margin:0;text-transform:none;font-size:.85rem;font-weight:600;letter-spacing:0">AI Arayışlar bölməsinə icazə</label>
     </div>
     <p class="field hint" style="margin-top:-.6rem">Qeyd: bu, klinika-sistemi ilə eyni mütəxəssis siyahısıdır — burada etdiyiniz dəyişiklik hər iki tətbiqdə görünəcək.</p>
     <div class="modal-actions">
@@ -571,7 +577,7 @@ function tryUnlock(){
   } else if(selVal.startsWith('staff:')){
     const sid = selVal.slice(6);
     const s = window.DB.staff[sid];
-    if(s && s.pin && val === s.pin) user = {id:sid, name:s.name, role: s.accessLevel==='admin' ? 'admin' : 'staff'};
+    if(s && s.pin && val === s.pin) user = {id:sid, name:s.name, role: s.accessLevel==='admin' ? 'admin' : 'staff', aiReportsAccess: s.aiReportsAccess===true};
   }
   if(user){
     sessionStorage.setItem('tj_user', JSON.stringify(user));
@@ -586,10 +592,14 @@ function tryUnlock(){
   }
 }
 window.tryUnlock = tryUnlock;
+function canSeeAiReports(){
+  return window.currentUser && (window.currentUser.role==='admin' || window.currentUser.aiReportsAccess===true);
+}
 function applyRoleUI(){
   const admin = window.currentUser && window.currentUser.role === 'admin';
   document.body.classList.toggle('is-admin', admin);
   document.body.classList.toggle('is-staff', !admin);
+  document.body.classList.toggle('ai-reports-allowed', canSeeAiReports());
   document.getElementById('whoAmI').textContent = window.currentUser ? ('👋 ' + window.currentUser.name) : '';
 }
 window.logout = function(){
@@ -620,6 +630,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 /* ============ NAVIGATION ============ */
 window.switchView = function(view){
+  if(view==='reports' && !canSeeAiReports()){ toast('⛔ Bu bölməyə icazəniz yoxdur'); view = 'dashboard'; }
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view===view));
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-'+view).classList.add('active');
@@ -774,9 +785,11 @@ window.openStaffModal = function(id){
     stName.value=s.name||''; stPhone.value=s.phone||''; stRole.value=s.role||''; stNotes.value=s.notes||'';
     stAccessLevel.value = s.accessLevel||'staff'; stPin.value = s.pin||'';
     stConductsSessions.checked = s.conductsSessions !== false;
+    stAiReportsAccess.checked = s.aiReportsAccess === true;
   } else {
     stName.value=stPhone.value=stRole.value=stNotes.value=stPin.value=''; stAccessLevel.value='staff';
     stConductsSessions.checked = true;
+    stAiReportsAccess.checked = false;
   }
   openModal('modalStaff');
 }
@@ -789,6 +802,7 @@ window.saveStaff = function(){
     name, phone: stPhone.value.trim(), role: stRole.value.trim(), notes: stNotes.value.trim(),
     accessLevel: isAdmin() ? stAccessLevel.value : (existing?.accessLevel||'staff'),
     pin: isAdmin() ? stPin.value.trim() : (existing?.pin||''),
+    aiReportsAccess: isAdmin() ? stAiReportsAccess.checked : (existing?.aiReportsAccess||false),
     conductsSessions: stConductsSessions.checked,
     createdAt: existing?.createdAt || Date.now()
   };

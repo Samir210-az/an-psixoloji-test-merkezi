@@ -3,60 +3,87 @@
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const MODEL = 'openai/gpt-oss-120b';
-const MAX_FIELD_LEN = 2000; // hər bir mətn sahəsi üçün üst limit — həddindən artıq uzun input-u kəsir
+const MAX_FIELD_LEN = 2000;   // böyük mətn sahələri (ümumi nəticə və s.) üçün üst limit
+const ITEM_CLIP = 500;        // siyahı elementləri (tək seans qeydi, tək həftə nəticəsi) üçün üst limit
+const MAX_SESSIONS = 80;      // aylıq/təhsil dövrü hesabatlarında çox sayda seans ola bilər
+const MAX_OUTCOMES = 30;
 
-function clip(s) {
+function clip(s, len) {
   if (!s) return '';
   const str = String(s);
-  return str.length > MAX_FIELD_LEN ? str.slice(0, MAX_FIELD_LEN) + '…' : str;
+  const max = len || MAX_FIELD_LEN;
+  return str.length > max ? str.slice(0, max) + '…' : str;
 }
+
+// Model təlimata baxmayaraq bəzən markdown işarələri (##, **, - və s.) qata bilər —
+// bunu ehtiyat tədbiri kimi server tərəfdə də təmizləyirik.
+function sanitizeContent(text) {
+  return text
+    .replace(/^\s{0,3}#{1,6}\s*/gm, '')       // # başlıqları
+    .replace(/\*\*(.*?)\*\*/g, '$1')          // **qalın**
+    .replace(/\*(.*?)\*/g, '$1')              // *əyri*
+    .replace(/__(.*?)__/g, '$1')              // __qalın__
+    .replace(/`{1,3}/g, '')                   // kod işarələri
+    .replace(/^\s{0,3}[-•*]\s+/gm, '')        // sətir əvvəlindəki siyahı işarələri
+    .replace(/^\s{0,3}>\s?/gm, '')            // sitat işarəsi
+    .replace(/\n{3,}/g, '\n\n')               // artıq boş sətirlər
+    .trim();
+}
+
+const NO_MARKDOWN_RULE =
+  "Heç bir formatlaşdırma simvolu istifadə etmə: #, *, **, __, -, •, > işarələrindən heç birini yazma. " +
+  "Başlıqları da simvolla deyil, yeni paraqrafa keçidlə göstər. Mətn tam, axıcı cümlələrdən ibarət olsun, adi insan tərəfindən əl ilə yazılmış bir məktub kimi oxunsun.";
 
 function buildParentPrompt(body) {
   const p = body.patient || {};
-  const outcome = body.outcome;
-  const sessions = Array.isArray(body.sessions) ? body.sessions.slice(0, 20) : [];
+  const outcomes = Array.isArray(body.outcomes) ? body.outcomes.slice(0, MAX_OUTCOMES) : [];
+  const sessions = Array.isArray(body.sessions) ? body.sessions.slice(0, MAX_SESSIONS) : [];
 
   const sessionsText = sessions.length
-    ? sessions.map(s => `- ${clip(s.date)} (${clip(s.type)}, status: ${clip(s.status)}): ${clip(s.notes) || 'qeyd yoxdur'}`).join('\n')
-    : 'Bu həftə üçün ayrıca seans qeydi yoxdur.';
+    ? sessions.map(s => `${clip(s.date)} tarixli ${clip(s.type)} (status: ${clip(s.status)}): ${clip(s.notes, ITEM_CLIP) || 'qeyd yazılmayıb'}`).join('\n')
+    : 'Bu dövr üçün ayrıca seans qeydi yoxdur.';
 
-  const outcomeText = outcome
-    ? [
-        outcome.summary ? `Ümumi nəticə: ${clip(outcome.summary)}` : '',
-        outcome.progress ? `İrəliləyiş: ${clip(outcome.progress)}` : '',
-        outcome.challenges ? `Çətinliklər: ${clip(outcome.challenges)}` : '',
-        outcome.nextSteps ? `Növbəti addımlar: ${clip(outcome.nextSteps)}` : ''
-      ].filter(Boolean).join('\n')
-    : 'Mütəxəssis bu həftə üçün ayrıca həftəlik nəticə yazmayıb.';
+  const outcomesText = outcomes.length
+    ? outcomes.map(o => {
+        const parts = [`${clip(o.weekStart)} həftəsi —`];
+        if (o.summary) parts.push(`ümumi nəticə: ${clip(o.summary, ITEM_CLIP)}.`);
+        if (o.progress) parts.push(`irəliləyiş: ${clip(o.progress, ITEM_CLIP)}.`);
+        if (o.challenges) parts.push(`çətinliklər: ${clip(o.challenges, ITEM_CLIP)}.`);
+        if (o.nextSteps) parts.push(`növbəti addımlar: ${clip(o.nextSteps, ITEM_CLIP)}.`);
+        return parts.join(' ');
+      }).join('\n')
+    : 'Bu dövr üçün ayrıca həftəlik nəticə qeydi yoxdur.';
 
-  const system = `Sən AN Psixoloji Dəstək və Reabilitasiya Mərkəzinin köməkçi analitik yazarısan.
-Vəzifən: mütəxəssisin apardığı seans qeydləri və həftəlik nəticə əsasında valideynə təqdim ediləcək qısa, isti, aydın bir arayış yazmaqdır.
-Qaydalar:
-- Yalnız Azərbaycan dilində, sadə və isti dildə yaz — valideyn klinik terminləri bilməyə bilər.
-- Heç bir tibbi və ya psixoloji diaqnoz qoyma, yalnız müşahidə edilən davranış və irəliləyişi təsvir et.
-- Yalnız sənə verilən məlumata əsaslan, uydurma fakt, rəqəm və ya nəticə əlavə etmə.
-- Əgər məlumat azdırsa, bunu açıq şəkildə qeyd et, boşluğu təxminlə doldurma.
-- Mətni bu bölmələrlə qur: "Bu həftə nə üzərində işlənib", "Müşahidə olunan irəliləyiş", "Diqqət yetirilməli məqamlar", "Evdə dəstək üçün tövsiyələr".
-- Ton dəstəkləyici olsun, lakin həqiqətə uyğun qalsın — süni tərif etmə.`;
+  const system = `Sən Azərbaycanda uşaq inkişafı və reabilitasiya sahəsində uzun illik təcrübəyə malik bir mütəxəssis kimi yazırsan.
+Tapşırığın, mütəxəssislərin apardığı seans qeydləri və həftəlik nəticələr əsasında valideynə təqdim ediləcək güclü, geniş izahlı və asanlıqla başa düşülən bir arayış hazırlamaqdır.
+
+Yazı qaydaları:
+Yalnız Azərbaycan dilində, sadə və elmi cəhətdən dəqiq dildə yaz. Mürəkkəb klinik terminlərdən qaçın, istifadə etməli olsan sadə sözlərlə izah et.
+${NO_MARKDOWN_RULE}
+Yalnız sənə verilən məlumata əsaslan. Uydurma fakt, rəqəm, diaqnoz və ya nəticə əlavə etmə. Məlumat azdırsa, bunu açıq şəkildə bildir, boşluğu təxminlə doldurma.
+Heç bir tibbi və ya psixoloji diaqnoz qoyma — yalnız müşahidə olunan davranışı və inkişafı təsvir et.
+Mətn geniş və izahlı olsun, səthi keçmə — hər müşahidəni valideynin aydın başa düşəcəyi şəkildə bir qədər açıqla və nümunələrlə dəstəklə.
+Mətni təbii axarla qur: əvvəlcə dövr ərzində uşağın necə iştirak etdiyini, sonra hansı sahələrdə irəliləyiş müşahidə olunduğunu, sonra hazırda hansı sahələrin diqqət tələb etdiyini, sonda isə evdə valideynin dəstək ola biləcəyi konkret və təhlükəsiz təcrübi tövsiyələri yaz.
+Ton isti, dəstəkləyici və hörmətli olsun, lakin həqiqətə sadiq qal — süni tərif və mübaliğədən çəkin.`;
 
   const user = `Pasient: ${clip(p.name)}${p.age ? ', ' + clip(p.age) + ' yaş' : ''}
 Məsul mütəxəssis: ${clip(body.staffName)}
-Həftə: ${clip(body.weekStart)} — ${clip(body.weekEnd)}
+Dövr: ${clip(body.periodLabel)} (${clip(body.periodStart)} – ${clip(body.periodEnd)})
 
-Həftəlik nəticə qeydi:
-${outcomeText}
+Bu dövrün həftəlik nəticə qeydləri:
+${outcomesText}
 
-Bu həftənin seans qeydləri:
+Bu dövrün seans qeydləri:
 ${sessionsText}
 
-Yuxarıdakı məlumat əsasında valideynə təqdim ediləcək arayışı hazırla.`;
+Yuxarıdakı məlumat əsasında valideynə təqdim ediləcək geniş və güclü arayışı hazırla.`;
 
   return { system, user };
 }
 
 function buildStaffPrompt(body) {
-  const sessions = Array.isArray(body.sessions) ? body.sessions.slice(0, 40) : [];
-  const outcomes = Array.isArray(body.outcomesWritten) ? body.outcomesWritten.slice(0, 20) : [];
+  const sessions = Array.isArray(body.sessions) ? body.sessions.slice(0, MAX_SESSIONS) : [];
+  const outcomes = Array.isArray(body.outcomesWritten) ? body.outcomesWritten.slice(0, MAX_OUTCOMES) : [];
 
   const total = sessions.length;
   const held = sessions.filter(s => s.status === 'keçirildi').length;
@@ -64,34 +91,38 @@ function buildStaffPrompt(body) {
   const noShow = sessions.filter(s => s.status === 'gəlmədi').length;
 
   const sessionsText = sessions.length
-    ? sessions.map(s => `- ${clip(s.date)} | ${clip(s.patientName)} | ${clip(s.sessionType)} | status: ${clip(s.status)} | qeyd: ${clip(s.notes) || 'yazılmayıb'}`).join('\n')
-    : 'Bu həftə seans qeydə alınmayıb.';
+    ? sessions.map(s => `${clip(s.date)} | ${clip(s.patientName)} | ${clip(s.sessionType)} | status: ${clip(s.status)} | qeyd: ${clip(s.notes, ITEM_CLIP) || 'yazılmayıb'}`).join('\n')
+    : 'Bu dövr ərzində seans qeydə alınmayıb.';
 
   const outcomesText = outcomes.length
-    ? outcomes.map(o => `- ${clip(o.patientName)}: ${clip(o.summary) || 'ümumi nəticə yazılmayıb'}`).join('\n')
-    : 'Bu həftə heç bir pasient üçün həftəlik nəticə yazılmayıb.';
+    ? outcomes.map(o => `${clip(o.weekStart)} həftəsi, ${clip(o.patientName)}: ${clip(o.summary, ITEM_CLIP) || 'ümumi nəticə yazılmayıb'}`).join('\n')
+    : 'Bu dövr ərzində heç bir pasient üçün həftəlik nəticə yazılmayıb.';
 
-  const system = `Sən AN Psixoloji Dəstək və Reabilitasiya Mərkəzinin direktoru üçün işləyən analitik köməkçisən.
-Vəzifən: mütəxəssisin bir həftəlik seans və qeyd fəaliyyətini obyektiv və konstruktiv formada dəyərləndirməkdir.
-Qaydalar:
-- Yalnız Azərbaycan dilində yaz.
-- Yalnız sənə verilən statistika və qeydlərə əsaslan, uydurma fakt əlavə etmə.
-- Qiymətləndirmə hörmətli, konstruktiv və faktlara əsaslanan olsun — ittihamçı ton işlətmə.
-- Mətni bu bölmələrlə qur: "Ümumi fəaliyyət", "Qeydlərin keyfiyyəti", "Güclü tərəflər", "Təkmilləşdirmə üçün tövsiyələr".
-- Qeydlərin keyfiyyətini qiymətləndirərkən onların detallılığına və faydalılığına bax, amma pasientlərin şəxsi məlumatlarını təkrar sitat gətirmə.`;
+  const system = `Sən AN Psixoloji Dəstək və Reabilitasiya Mərkəzinin klinik rəhbəri qismində, mütəxəssislərin iş keyfiyyətini qiymətləndirən təcrübəli bir metodist kimi yazırsan.
+Tapşırığın, verilən seans və qeyd fəaliyyəti əsasında mütəxəssisin iş prinsipini, metodologiyasını və qeyd mədəniyyətini dərindən qiymətləndirməkdir.
+
+Yazı qaydaları:
+Yalnız Azərbaycan dilində yaz.
+${NO_MARKDOWN_RULE}
+Yalnız sənə verilən statistika və qeydlərə əsaslan, uydurma fakt əlavə etmə.
+Qiymətləndirmə obyektiv, konkret və konstruktiv olsun. Məzmunsuz ümumi tərif cümlələrindən ("yaxşı işləyir" kimi) qaçın — hər qiyməti konkret müşahidə ilə əsaslandır.
+Mütəxəssisin işində görülən çatışmazlıqları, səhvləri və ya təkmilləşdirmə tələb edən vərdişləri aydın və birbaşa, lakin hörmətli dillə göstər — bunları gizlətmə və ya yumşaltma ilə mənasızlaşdırma.
+Xüsusilə bunlara diqqət et: seans qeydlərinin detallılığı və faydalılığı, göstərişlərin ardıcıllığı, ləğv edilmə və gəlməmə hallarının tezliyi, həftəlik nəticələrin vaxtında və mənalı yazılıb-yazılmadığı, fərqli pasientlər arasında iş keyfiyyətinin sabitliyi.
+Mətni təbii axarla qur: əvvəlcə ümumi fəaliyyətin icmalını, sonra iş prinsipi və metodologiyanın qiymətləndirilməsini, sonra aşkar edilən səhv və çatışmazlıqları, sonra güclü tərəfləri, sonda isə konkret təkmilləşdirmə tövsiyələrini yaz.
+Ton peşəkar və hörmətli olsun, lakin yumşaqlıq naminə həqiqəti gizlətmə.`;
 
   const user = `Mütəxəssis: ${clip(body.staffName)}
-Həftə: ${clip(body.weekStart)} — ${clip(body.weekEnd)}
+Dövr: ${clip(body.periodLabel)} (${clip(body.periodStart)} – ${clip(body.periodEnd)})
 
 Statistika: cəmi ${total} seans, ${held} keçirilib, ${cancelled} ləğv edilib, ${noShow} pasient gəlməyib.
 
 Seans qeydləri:
 ${sessionsText}
 
-Bu həftə yazılmış həftəlik nəticələr:
+Bu dövr yazılmış həftəlik nəticələr:
 ${outcomesText}
 
-Yuxarıdakı məlumat əsasında mütəxəssisin bu həftəki işi barədə hesabat hazırla.`;
+Yuxarıdakı məlumat əsasında mütəxəssisin iş prinsipini qiymətləndirən, aşkar edilən səhvlərini və güclü tərəflərini göstərən geniş qiymətləndirmə hazırla.`;
 
   return { system, user };
 }
@@ -119,7 +150,7 @@ async function callGroq(apiKey, system, user, signal) {
     body: JSON.stringify({
       model: MODEL,
       temperature: 0.4,
-      max_completion_tokens: 900,
+      max_completion_tokens: 1600,
       messages: [
         { role: 'system', content: system },
         { role: 'user', content: user }
@@ -166,9 +197,9 @@ export default async function handler(req, res) {
       if (groqRes.ok) {
         clearTimeout(timeout);
         const data = await groqRes.json();
-        const content = data?.choices?.[0]?.message?.content?.trim();
-        if (!content) { res.status(502).json({ error: 'AI boş cavab qaytardı' }); return; }
-        res.status(200).json({ content, model: MODEL });
+        const rawContent = data?.choices?.[0]?.message?.content?.trim();
+        if (!rawContent) { res.status(502).json({ error: 'AI boş cavab qaytardı' }); return; }
+        res.status(200).json({ content: sanitizeContent(rawContent), model: MODEL });
         return;
       }
 
