@@ -493,8 +493,8 @@ body.ai-reports-allowed .ai-only{display:flex!important}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import { getDatabase, ref, onValue, set, get, push, remove, update } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCBhyGNzZRGgQShP_C9kwAzTm_g_0zJlzg",
@@ -523,18 +523,60 @@ function onDataUpdate(){
   if(typeof window.renderAll === 'function') window.renderAll();
 }
 function onFbError(label, err){
+  if(err && /permission/i.test(String(err.code || err.message || '')) && typeof window.__onDeviceUnbound === 'function'){ window.__onDeviceUnbound(); return; }
   console.error('Firebase xətası ('+label+'):', err);
   if(typeof window.showFbError === 'function') window.showFbError(label, err);
 }
 function startFbListeners(){
-  onValue(patientsRef, snap => { window.DB.patients = snap.val() || {}; onDataUpdate(); }, err => onFbError('patients', err));
-  onValue(staffRef, snap => { window.DB.staff = snap.val() || {}; onDataUpdate(); }, err => onFbError('staff', err));
-  onValue(sessionsRef, snap => { window.DB.sessions = snap.val() || {}; onDataUpdate(); }, err => onFbError('sessions', err));
-  onValue(outcomesRef, snap => { window.DB.outcomes = snap.val() || {}; onDataUpdate(); }, err => onFbError('outcomes', err));
-  onValue(reportsRef, snap => { window.DB.reports = snap.val() || {}; onDataUpdate(); }, err => onFbError('reports', err));
+  unsubs.push(onValue(patientsRef, snap => { window.DB.patients = snap.val() || {}; onDataUpdate(); }, err => onFbError('patients', err)));
+  unsubs.push(onValue(staffRef, snap => { window.DB.staff = snap.val() || {}; syncPublicStaff(window.DB.staff); onDataUpdate(); }, err => onFbError('staff', err)));
+  unsubs.push(onValue(sessionsRef, snap => { window.DB.sessions = snap.val() || {}; onDataUpdate(); }, err => onFbError('sessions', err)));
+  unsubs.push(onValue(outcomesRef, snap => { window.DB.outcomes = snap.val() || {}; onDataUpdate(); }, err => onFbError('outcomes', err)));
+  unsubs.push(onValue(reportsRef, snap => { window.DB.reports = snap.val() || {}; onDataUpdate(); }, err => onFbError('reports', err)));
 }
 // Firebase Rules "auth != null" tələb etdiyi üçün görünməz (anonim) giriş.
-signInAnonymously(fbAuth).then(startFbListeners).catch(err => onFbError('auth', err));
+// ---- Cihaz girişi: PIN bazanın qaydalarında yoxlanır, PIN-lər heç kimə göndərilmir ----
+const APP_ID = 'terapiya';
+const publicStaffRef = ref(fbDb, 'klinika_public/staff');
+const unsubs = [];
+let listenersOn = false;
+function stopFbListeners(){ unsubs.splice(0).forEach(u => { try{ u(); }catch(e){} }); listenersOn = false; }
+function startSecure(){ if(listenersOn) return; listenersOn = true; startFbListeners(); }
+function syncPublicStaff(staff){
+  const pub = {};
+  Object.entries(staff || {}).forEach(([id, st]) => {
+    if(!st) return;
+    pub[id] = { name: st.name || '', accessLevel: st.accessLevel === 'admin' ? 'admin' : 'staff',
+                klinika: !!(st.pin && st.klinikaAccess === true), terapiya: !!st.pin, ai: st.aiReportsAccess === true };
+  });
+  if(JSON.stringify(pub) !== JSON.stringify(window.DB.publicStaff || {})) set(publicStaffRef, pub).catch(() => {});
+}
+// Əvvəl saxlanmış anonim hesabı gözlə, yoxdursa bir dəfə yarat (hər açılışda yeni hesab yaranmasın)
+const authReady = new Promise(res => {
+  const off = onAuthStateChanged(fbAuth, u => {
+    off();
+    if(u) res(u); else signInAnonymously(fbAuth).then(c => res(c.user), err => { onFbError('auth', err); res(null); });
+  });
+});
+authReady.then(u => {
+  if(!u) return;
+  onValue(publicStaffRef, snap => { window.DB.publicStaff = snap.val() || {}; if(typeof window.refreshLoginOptions === 'function') window.refreshLoginOptions(); }, () => {});
+  // Keçid dövrü: əməkdaş siyahısı hələ açıqdırsa, giriş siyahısı üçün bir dəfə oxu
+  get(staffRef).then(sn => { if(!listenersOn){ window.DB.staff = sn.val() || {}; if(typeof window.refreshLoginOptions === 'function') window.refreshLoginOptions(); } }).catch(() => {});
+  get(ref(fbDb, `klinika_auth/devices/${u.uid}`)).then(sn => {
+    if(sn.exists()) startSecure(); else if(typeof window.__onDeviceUnbound === 'function') window.__onDeviceUnbound();
+  }).catch(() => { if(typeof window.__onDeviceUnbound === 'function') window.__onDeviceUnbound(); });
+});
+window.__fbBindDevice = async (sid, pin) => {
+  const u = await authReady; if(!u) throw new Error('auth');
+  await set(ref(fbDb, `klinika_auth/devices/${u.uid}`), { app: APP_ID, sid, pin, ts: Date.now() });
+  startSecure();
+};
+window.__fbUnbindDevice = async () => {
+  stopFbListeners();
+  const u = fbAuth.currentUser;
+  if(u){ try{ await remove(ref(fbDb, `klinika_auth/devices/${u.uid}`)); }catch(e){} }
+};
 
 function wrapWrite(promise, label){
   return promise.catch(err => { console.error('Yazma xətası ('+label+'):', err); if(typeof window.showFbError==='function') window.showFbError(label, err); });
@@ -557,15 +599,15 @@ window.__fbRemoveReport = (id) => wrapWrite(remove(ref(fbDb, `terapiya/aiReports
 
 <script>
 /* ============ LOGIN / ROLES ============ */
-const MASTER_ADMIN_PIN = "2026"; // admin master kodu
 window.currentUser = null;
 
 window.refreshLoginOptions = function(){
   const sel = document.getElementById('loginUser');
   if(!sel || document.getElementById('app').style.display === 'block') return;
   const current = sel.value;
-  const staffOpts = Object.entries(window.DB.staff||{})
-    .filter(([id,s]) => s.pin)
+  const pubList = window.DB.publicStaff && Object.keys(window.DB.publicStaff).length ? window.DB.publicStaff : null;
+  const staffOpts = Object.entries(pubList || window.DB.staff || {})
+    .filter(([id,s]) => pubList ? s.terapiya : (s.pin))
     .sort((a,b)=>(a[1].name||'').localeCompare(b[1].name||''))
     .map(([id,s])=>`<option value="staff:${id}">${s.accessLevel==='admin'?'🔑':'🧑‍⚕️'} ${esc(s.name)}</option>`).join('');
   sel.innerHTML = `<option value="admin_master">🔑 Admin (Sistem sahibi)</option>` + staffOpts;
@@ -573,26 +615,30 @@ window.refreshLoginOptions = function(){
 }
 function tryUnlock(){
   const selVal = document.getElementById('loginUser').value;
-  const val = document.getElementById('lockInput').value;
-  let user = null;
-  if(selVal === 'admin_master'){
-    if(val === MASTER_ADMIN_PIN) user = {id:'admin_master', name:'Admin (Sistem sahibi)', role:'admin'};
-  } else if(selVal.startsWith('staff:')){
-    const sid = selVal.slice(6);
-    const s = window.DB.staff[sid];
-    if(s && s.pin && val === s.pin) user = {id:sid, name:s.name, role: s.accessLevel==='admin' ? 'admin' : 'staff', aiReportsAccess: s.aiReportsAccess===true};
-  }
-  if(user){
+  const val = document.getElementById('lockInput').value.trim();
+  const errEl = document.getElementById('lockErr');
+  if(!val){ errEl.textContent = 'PIN daxil edin'; return; }
+  const sid = selVal === 'admin_master' ? 'admin_master' : (selVal.startsWith('staff:') ? selVal.slice(6) : '');
+  if(!sid) return;
+  errEl.textContent = 'Yoxlanılır…';
+  window.__fbBindDevice(sid, val).then(() => {
+    let user;
+    if(sid === 'admin_master') user = {id:'admin_master', name:'Admin (Sistem sahibi)', role:'admin'};
+    else {
+      const st = (window.DB.publicStaff||{})[sid] || (window.DB.staff||{})[sid] || {};
+      user = {id:sid, name:st.name, role: st.accessLevel==='admin' ? 'admin' : 'staff', aiReportsAccess: st.ai===true || st.aiReportsAccess===true};
+    }
+    errEl.textContent = '';
     sessionStorage.setItem('tj_user', JSON.stringify(user));
     window.currentUser = user;
     document.getElementById('lockScreen').style.display='none';
     document.getElementById('app').style.display='block';
     applyRoleUI();
     renderAll();
-  } else {
-    document.getElementById('lockErr').textContent = 'PIN yanlışdır, yenidən cəhd edin';
+  }).catch(() => {
+    errEl.textContent = 'PIN yanlışdır, yenidən cəhd edin';
     document.getElementById('lockInput').value='';
-  }
+  });
 }
 window.tryUnlock = tryUnlock;
 function canSeeAiReports(){
@@ -605,7 +651,13 @@ function applyRoleUI(){
   document.body.classList.toggle('ai-reports-allowed', canSeeAiReports());
   document.getElementById('whoAmI').textContent = window.currentUser ? ('👋 ' + window.currentUser.name) : '';
 }
+window.__onDeviceUnbound = function(){
+  if(!window.currentUser) return;
+  window.logout();
+  document.getElementById('lockErr').textContent = 'Bu cihazda PIN-i yenidən daxil edin';
+};
 window.logout = function(){
+  if(window.__fbUnbindDevice) window.__fbUnbindDevice();
   sessionStorage.removeItem('tj_user');
   window.currentUser = null;
   document.getElementById('app').style.display='none';
